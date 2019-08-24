@@ -1,0 +1,1 @@
+export type IConstructible = new (...params: any[]) => any;

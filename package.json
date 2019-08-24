@@ -1,0 +1,22 @@
+{
+    "name": "view-engine",
+    "version": "0.0.0",
+    "description": "",
+    "dependencies": {
+        "reflect-metadata": "0.1.13"
+    },
+    "devDependencies": {
+        "@types/jasmine": "3.4.0",
+        "jasmine": "3.4.0",
+        "tslint": "5.19.0",
+        "typescript": "3.5.3"
+    },
+    "scripts": {
+        "build": "tsc",
+        "build-tests": "tsc -p ./tsconfig-tests.json",
+        "test:debug": "npm run build-tests && node --inspect-brk node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.json",
+        "test": "npm run build-tests &&  node ./node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=jasmine.json",
+        "lint": "tslint -c tslint.json --fix --project ."
+    },
+    "author": "Gabriel Belchev"
+}
