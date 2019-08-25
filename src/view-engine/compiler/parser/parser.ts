@@ -93,16 +93,4 @@ export class Parser {
 
         return child;
     }
-
-    private getClosestComponentViewNodeParent(parent: Node) {
-        if (parent instanceof ComponentViewNode) {
-            return parent.parent;
-        }
-
-        if (!parent.parent) {
-            return null;
-        }
-
-        return this.getClosestComponentViewNodeParent(parent.parent);
-    }
 }

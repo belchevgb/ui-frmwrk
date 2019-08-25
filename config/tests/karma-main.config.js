@@ -1,4 +1,4 @@
-const webpackConfig = require("../webpack/webpack.config");
+const webpackConfig = require("../webpack/webpack-dev.config");
 
 const testsPattern = "../../tests/**/*.spec.ts";
 const srcPattern = "../../src/**/*.ts";
