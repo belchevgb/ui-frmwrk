@@ -27,7 +27,8 @@
     "scripts": {
         "start": "webpack-dev-server --mode development --open --hot --config ./config/webpack/webpack.config.js",
         "test:debug": "karma start ./config/tests/karma-debug.config.js",
-        "test": "karma start ./config/tests/karma-production.config.js"
+        "test": "karma start ./config/tests/karma-production.config.js",
+        "lint": "tslint -c tslint.json --fix --project ."
     },
     "author": "Gabriel Belchev"
 }
