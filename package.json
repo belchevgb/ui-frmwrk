@@ -25,7 +25,7 @@
         "webpack-dev-server": "^3.8.0"
     },
     "scripts": {
-        "start": "webpack-dev-server --mode development --open --hot --config ./config/webpack/webpack.config.js",
+        "start": "webpack-dev-server --mode development --open --hot --config ./config/webpack/webpack-dev.config.js",
         "test:debug": "karma start ./config/tests/karma-debug.config.js",
         "test": "karma start ./config/tests/karma-production.config.js",
         "lint": "tslint -c tslint.json --fix --project ."
