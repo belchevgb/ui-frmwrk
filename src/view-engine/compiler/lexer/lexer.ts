@@ -38,12 +38,15 @@ function isNewLine(char: string) {
 
 @Injectable
 export class Lexer {
-    private currentIndex = 0;
-    private context = Context.None;
-    private position: IPosition = { row: 0, col: 0 };
+    private currentIndex: number;
+    private context: Context;
+    private position: IPosition;
     private template: string;
 
     init(template: string) {
+        this.context = Context.None;
+        this.currentIndex = 0;
+        this.position = { row: 0, col: 0 };
         this.template = template;
     }
 

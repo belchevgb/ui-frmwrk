@@ -4,6 +4,7 @@ import { IStringToken, TokenType, ITagToken } from "../../../src/view-engine/com
 describe("Lexer tests", () => {
     describe("Should process comments correctly", () => {
         it("process single-line comment", () => {
+            debugger;
             const text = " Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ";
             const comment = `<!--${text}-->`;
             const lexer = new Lexer();
