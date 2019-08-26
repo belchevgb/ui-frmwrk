@@ -1,7 +1,7 @@
 # Custom
 dist/
 tests-dist/
-src/index.ts
+src/index.html
 
 # Logs
 logs

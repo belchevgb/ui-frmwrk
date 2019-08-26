@@ -21,7 +21,7 @@ export const enum TextNodeType {
 }
 
 export class ComponentViewNode extends Node {
-    constructor(public parent: ComponentViewNode, public selector: string, public compReg: IComponentRegistration) {
+    constructor(public parent: Node, public selector: string, public compReg: IComponentRegistration) {
         super(parent);
     }
 }
@@ -54,7 +54,7 @@ export class Parser {
                     break;
 
                 case TokenType.CloseTag:
-                    currentNode = currentNode.parent;
+                    currentNode = currentNode.parent ? currentNode.parent : currentNode;
                     break;
 
                 case TokenType.Comment:
@@ -82,26 +82,15 @@ export class Parser {
         let child: Node;
 
         if (compReg) {
-            const compParent = this.getClosestComponentViewNodeParent(parent);
-            child = new ComponentViewNode(compParent, token.name, compReg.componentType);
+            child = new ComponentViewNode(parent, token.name, compReg);
         } else {
             child = new ElementNode(parent, token.name, token.attributes || []);
         }
 
-        parent.children.push(child);
+        if (parent) {
+            parent.children.push(child);
+        }
 
         return child;
-    }
-
-    private getClosestComponentViewNodeParent(parent: Node) {
-        if (parent instanceof ComponentViewNode) {
-            return parent.parent;
-        }
-
-        if (!parent.parent) {
-            return null;
-        }
-
-        return this.getClosestComponentViewNodeParent(parent.parent);
     }
 }

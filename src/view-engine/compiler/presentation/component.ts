@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { registerType, Injectable } from "../../../di";
+import { registerType, Injectable, resolve } from "../../../di";
 
 type PropChangeFunc = (changedPropKey: any, prevValue: any, newValue: any) => void;
 
@@ -44,6 +44,10 @@ export const COMPONENT_CONFIG_MD_KEY = "cmp-cfg";
 export function ComponentDef(config: IComponentConfig) {
     return (componentType: any) => {
         Reflect.defineMetadata(COMPONENT_CONFIG_MD_KEY, config, componentType);
+
+        const componentStore: ComponentStore = resolve(ComponentStore);
+
+        componentStore.registerComponent(config.selector, { componentType, template: config.template });
         registerType(componentType);
     };
 }
