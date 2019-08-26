@@ -10,7 +10,6 @@ export class ViewBuilder {
     constructor(private parser: Parser, private renderer: Renderer) { }
 
     createView(componentType: any, parent: ComponentView = null) {
-        debugger;
         const component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
         const elementsAst = this.parser.parse(config.template);
