@@ -1,5 +1,5 @@
 import { Lexer } from "../../../src/view-engine/compiler/lexer/lexer";
-import { IStringToken, TokenType, ITagToken } from "../../../src/view-engine/compiler/lexer/token";
+import { IStringToken, TokenType, ITagToken, StringPartType } from "../../../src/view-engine/compiler/lexer/token";
 
 describe("Lexer tests", () => {
     describe("Should process comments correctly", () => {
@@ -125,6 +125,27 @@ describe("Lexer tests", () => {
 
             const closeTagToken = lexer.nextToken();
             expect(closeTagToken.type).toEqual(TokenType.CloseTag);
+        });
+
+        it("process interpolations in content", () => {
+            const content = "some text {{interpolation}} other text {{interpolation}}";
+            const lexer = new Lexer();
+
+            lexer.init(content);
+
+            const token = lexer.nextToken() as IStringToken;
+
+            expect(token.stringParts[0].value).toEqual("some text ");
+            expect(token.stringParts[0].type).toEqual(StringPartType.Text);
+
+            expect(token.stringParts[1].value).toEqual("interpolation");
+            expect(token.stringParts[1].type).toEqual(StringPartType.Interpolation);
+
+            expect(token.stringParts[2].value).toEqual(" other text ");
+            expect(token.stringParts[2].type).toEqual(StringPartType.Text);
+
+            expect(token.stringParts[3].value).toEqual("interpolation");
+            expect(token.stringParts[3].type).toEqual(StringPartType.Interpolation);
         });
 
         it("tokenize sample html", () => {

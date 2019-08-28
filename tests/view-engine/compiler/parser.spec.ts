@@ -1,4 +1,4 @@
-import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration } from "../../../src";
+import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration, InterpolationNode } from "../../../src";
 import { resolve } from "../../../src/di";
 
 describe("Parser tests", () => {
@@ -34,6 +34,22 @@ describe("Parser tests", () => {
         verifyElementNode(h1Node, "h1", divNode);
         verifyElementNode(brNode, "br", h1Node);
         verifyTextNode(contentNode, TextNodeType.Content, "text content", h1Node);
+    });
+
+    it("should handle interpolation", () => {
+        const html = "<div>text {{interpolation}} text</div>";
+        const parser: Parser = resolve(Parser);
+        const ast: Node = parser.parse(html);
+
+        const divNode = ast.children[0];
+        const firstTextNode = divNode.children[0];
+        const interpolationNode = divNode.children[1];
+        const secondTextNode = divNode.children[2];
+
+        expect(divNode instanceof ElementNode).toBe(true);
+        expect(firstTextNode instanceof TextNode).toBe(true);
+        expect(interpolationNode instanceof InterpolationNode).toBe(true);
+        expect(secondTextNode instanceof TextNode).toBe(true);
     });
 
     function verifyElementNode(node: ElementNode, expectedName: string, expectedParent: Node) {

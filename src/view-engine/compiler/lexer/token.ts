@@ -29,4 +29,15 @@ export interface ITagToken extends IToken {
 
 export interface IStringToken extends IToken {
     value: string;
+    stringParts: IStringPart[];
+}
+
+export enum StringPartType {
+    Text,
+    Interpolation
+}
+
+export interface IStringPart {
+    value: string;
+    type: StringPartType;
 }

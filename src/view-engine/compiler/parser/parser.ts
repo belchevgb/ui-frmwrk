@@ -1,5 +1,5 @@
 import { Lexer } from "../lexer/lexer";
-import { TokenType, ITagToken, IAttribute, IStringToken } from "../lexer/token";
+import { TokenType, ITagToken, IAttribute, IStringToken, StringPartType } from "../lexer/token";
 import { ComponentStore, IComponentRegistration } from "../presentation/component";
 import { Injectable } from "../../../di";
 
@@ -28,6 +28,12 @@ export class ComponentViewNode extends Node {
 
 export class TextNode extends Node {
     constructor(public parent: Node, public value: string, public type: TextNodeType) {
+        super(parent);
+    }
+}
+
+export class InterpolationNode extends Node {
+    constructor(public parent: Node, public value: string) {
         super(parent);
     }
 }
@@ -73,6 +79,18 @@ export class Parser {
     }
 
     private createTextNode(parent: Node, token: IStringToken, type: TextNodeType) {
+        if (token.stringParts && token.stringParts.length) {
+            token.stringParts.forEach(p => {
+                if (p.type === StringPartType.Text) {
+                    parent.children.push(new TextNode(parent, p.value, type));
+                } else {
+                    parent.children.push(new InterpolationNode(parent, p.value));
+                }
+            });
+
+            return;
+        }
+
         const child = new TextNode(parent, token.value, type);
         parent.children.push(child);
     }
