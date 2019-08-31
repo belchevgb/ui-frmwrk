@@ -8,16 +8,18 @@ export class AttributeBindingStrategy extends BindingStrategyBase<HTMLElement> {
     }
 
     update(value: any): void {
-        if (value !== this.currentValue) {
-            let attributeValue = this.element.getAttribute(this.attributeName);
-            const newValueTokens = attributeValue
-                .split(" ")
-                .filter(x => x !== this.currentValue);
-
-            newValueTokens.push(value);
-            attributeValue = newValueTokens.join(" ");
-            this.currentValue = value;
-            this.element.setAttribute(this.attributeName, attributeValue);
+        if (value === null || value === undefined) {
+            value = "";
         }
+
+        let attributeValue = this.element.getAttribute(this.attributeName);
+        const newValueTokens = attributeValue
+            .split(" ")
+            .filter(x => x !== this.currentValue);
+
+        newValueTokens.push(value);
+        attributeValue = newValueTokens.join(" ");
+        this.currentValue = value;
+        this.element.setAttribute(this.attributeName, attributeValue);
     }
 }
