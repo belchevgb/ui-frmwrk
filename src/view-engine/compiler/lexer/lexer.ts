@@ -1,4 +1,4 @@
-import { IPosition, TokenType, IAttribute, IToken, IStringToken, ITagToken } from "./token";
+import { IPosition, TokenType, IAttribute, IToken, IStringToken, ITagToken, IStringPart, StringPartType } from "./token";
 import { Injectable } from "../../../di";
 
 enum Context {
@@ -20,7 +20,9 @@ const identifiers = {
     selfClosingTagEnd: "/>",
     attributeKeyValueDelimiter: "=",
     quote: '"',
-    closeTagStart: "</"
+    closeTagStart: "</",
+    interpolationStart: "{{",
+    interpolationEnd: "}}"
 };
 
 const matchers = {
@@ -79,8 +81,40 @@ export class Lexer {
     private createContentToken() {
         const token = this.createToken(TokenType.Content) as IStringToken;
         token.value = this.consumeUntil(c => !this.isEnd() && c !== identifiers.tagOpenBracket);
+        token.stringParts = this.getContentParts(token.value);
 
         return token;
+    }
+
+    private getContentParts(content: string): IStringPart[] {
+        const parts: IStringPart[] = [];
+
+        let currentPartValue = "";
+        for (let i = 0; i < content.length; i++) {
+            if (content.substr(i, identifiers.interpolationStart.length) === identifiers.interpolationStart) {
+                parts.push({ value: currentPartValue, type: StringPartType.Text });
+                currentPartValue = "";
+                i += identifiers.interpolationStart.length;
+
+                while (content.substr(i, identifiers.interpolationStart.length) !== identifiers.interpolationEnd) {
+                    currentPartValue += content[i];
+                    i++;
+                }
+
+                parts.push({ value: currentPartValue, type: StringPartType.Interpolation });
+                i += identifiers.interpolationEnd.length - 1;
+                currentPartValue = "";
+                continue;
+            }
+
+            currentPartValue += content[i];
+
+            if (i === content.length - 1) {
+                parts.push({ value: currentPartValue, type: StringPartType.Text });
+            }
+        }
+
+        return parts;
     }
 
     private createCommentToken() {

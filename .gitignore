@@ -2,6 +2,7 @@
 dist/
 tests-dist/
 src/index.html
+index.html
 
 # Logs
 logs
