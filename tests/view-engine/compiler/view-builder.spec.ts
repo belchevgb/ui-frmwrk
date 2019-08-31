@@ -28,12 +28,28 @@ describe("ViewBuilder tests", () => {
         @ComponentDef({ selector: "component-selector", template: "<div>text {{prop}} text</div>"})
         class CustomComponent extends Component { }
 
-        const html = "<div>text {{prop}} text</div>";
         const builder: ViewBuilder = resolve(ViewBuilder);
         const view = builder.createView(CustomComponent);
         const bindings = view.bindings.get("prop");
 
         expect(bindings.length).toEqual(1);
         expect(bindings[0] instanceof TextBindingStrategy);
+    });
+
+    it("should process attribute interpolation correctly", () => {
+        @ComponentDef({ selector: "component-selector", template: `<div someAttr="key1 {{prop}} key2"></div>`})
+        class CustomComponent extends Component { }
+
+        const builder: ViewBuilder = resolve(ViewBuilder);
+        const view = builder.createView(CustomComponent);
+        const bindings = view.bindings.get("prop");
+
+        expect(bindings.length).toEqual(1);
+        expect(bindings[0] instanceof TextBindingStrategy);
+
+        const divElement = view.presentation.children[0];
+        const attribute = divElement.getAttribute("someAttr");
+
+        expect(attribute.includes("{{prop}}")).toBe(false);
     });
 });
