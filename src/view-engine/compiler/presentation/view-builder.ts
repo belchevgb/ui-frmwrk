@@ -1,4 +1,4 @@
-import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType } from "../parser/parser";
+import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode } from "../parser/parser";
 import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, ComponentStore } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
@@ -30,7 +30,7 @@ export class ViewBuilder {
     }
 
     private createChildElement(ast: Node, view: ComponentView, parentElement: HTMLElement) {
-        let node: HTMLElement = null;
+        let node: any = this.renderer.createText("");
 
         if (ast instanceof ComponentViewNode) {
             const childView = this.createView(ast.compReg.componentType);
@@ -44,13 +44,16 @@ export class ViewBuilder {
             node = textNode;
         }
 
-        parentElement.appendChild(node);
-        this.bindingsProcessor.setBindings(ast, node, parentElement, view);
+        if (!(ast instanceof InterpolationNode)) {
+            parentElement.appendChild(node);
 
-        for (const childNode of ast.children) {
-            const childPresentation = this.createChildElement(childNode, view, node);
-            node.appendChild(childPresentation);
+            for (const childNode of ast.children) {
+                const childPresentation = this.createChildElement(childNode, view, node);
+                node.appendChild(childPresentation);
+            }
         }
+
+        this.bindingsProcessor.setBindings(ast, node, parentElement, view);
 
         return node;
     }

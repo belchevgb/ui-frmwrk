@@ -4,7 +4,7 @@ import { BindingStrategyBase } from "../bindings/strategies/binding-strategy.bas
 export class ComponentView {
     children: ComponentView[] = [];
     presentation: HTMLElement;
-    bindings = new Map<any, BindingStrategyBase[]>();
+    bindings = new Map<any, BindingStrategyBase<any>[]>();
 
     constructor(public parent: ComponentView, public component: Component) {
         const store = component.data as DataStore;
