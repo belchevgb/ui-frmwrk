@@ -1,6 +1,10 @@
 import { BindingStrategyBase } from "./binding-strategy.base";
 import { Component } from "../../presentation/component";
+import { hasValue } from "../../../../common/helpers";
 
+/**
+ * Handles the update of interpolated property in attribute.
+ */
 export class AttributeBindingStrategy extends BindingStrategyBase<HTMLElement> {
     private currentValue = "";
 
@@ -8,8 +12,12 @@ export class AttributeBindingStrategy extends BindingStrategyBase<HTMLElement> {
         super(element, component);
     }
 
+    /**
+     * Updates the attribute's value.
+     * @param value The new value.
+     */
     update(value: any): void {
-        if (value === null || value === undefined) {
+        if (!hasValue(value)) {
             value = "";
         }
 

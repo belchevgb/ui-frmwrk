@@ -1,5 +1,5 @@
 import { EntryProvider } from "./providers/entry-provider";
-import { validateHasValue } from "./helpers";
+import { validateHasValue } from "../common/helpers";
 
 export enum Lifetime {
     Transient,

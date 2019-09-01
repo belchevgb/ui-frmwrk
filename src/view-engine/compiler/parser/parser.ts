@@ -50,10 +50,17 @@ export class InterpolationNode extends Node {
     }
 }
 
+/**
+ * Builds AST from a template.
+ */
 @Injectable
 export class Parser {
     constructor(private lexer: Lexer, private compStore: ComponentStore) { }
 
+    /**
+     * Builds AST from a template.
+     * @param template The template to parse.
+     */
     parse(template: string) {
         this.lexer.init(template);
 

@@ -40,6 +40,9 @@ function isNewLine(char: string) {
     return matchers.newLine.test(char);
 }
 
+/**
+ * Tokenizes given template.
+ */
 @Injectable
 export class Lexer {
     private currentIndex: number;
@@ -54,6 +57,9 @@ export class Lexer {
         this.template = template;
     }
 
+    /**
+     * Gets the next token of the initialized template.
+     */
     nextToken() {
         if (this.isEnd()) {
             return this.createToken(TokenType.End);

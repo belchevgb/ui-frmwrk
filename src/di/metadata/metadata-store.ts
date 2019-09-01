@@ -1,5 +1,5 @@
 import { IConstructible } from "../interfaces";
-import { isString } from "../helpers";
+import { isString } from "../../common/helpers";
 
 export enum InjectionTypes {
     Ctor,
