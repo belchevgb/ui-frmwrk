@@ -21,57 +21,74 @@ export class ViewBuilder {
     createView(componentType: any, parent: ComponentView = null) {
         const component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
-        const elementsAst = this.parser.parse(config.template);
+        const ast = this.parser.parse(config.template);
         const view = new ComponentView(parent, component);
-        const presentation = this.buildChildTree(elementsAst, config, view);
 
-        view.presentation = presentation;
+        this.buildChildTree(ast, config, view);
+
         return view;
     }
 
     private buildChildTree(ast: Node, config: IComponentConfig, view: ComponentView) {
         const viewPresentation = this.renderer.createElement(config.selector);
 
-        ast.children.forEach(c => this.createChildElement(c, view, viewPresentation));
-
-        return viewPresentation;
+        ast.children.forEach(c => this.createChild(c, view, viewPresentation));
+        view.presentation = viewPresentation;
     }
 
-    private createChildElement(ast: Node, view: ComponentView, parentElement: HTMLElement) {
+    private createChild(ast: Node, view: ComponentView, parentElement: HTMLElement) {
         let node: any = this.renderer.createText("");
 
         if (ast instanceof ComponentViewNode) {
-            const childView = this.createView(ast.compReg.componentType, view);
-
-            view.children.push(childView);
-            node = childView.presentation;
+            node = this.createChildView(ast, view, parentElement);
         } else if (ast instanceof ElementNode) {
-            const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
-            const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
-
-            node = this.renderer.createElement(ast.name, attributes);
-            eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
+            node = this.createChildElement(ast, view, parentElement);
         } else if (ast instanceof TextNode) {
-            const textNode: any = ast.type === TextNodeType.Comment ? this.renderer.createComment(ast.value) : this.renderer.createText(ast.value);
-            node = textNode;
+            node = this.createTextElement(ast);
         }
 
         if (!(ast instanceof InterpolationNode)) {
-            parentElement.appendChild(node);
-
-            for (const childNode of ast.children) {
-                if (childNode instanceof AttributeNode || childNode instanceof EventBindingNode) {
-                    continue;
-                }
-
-                const childPresentation = this.createChildElement(childNode, view, node);
-                node.appendChild(childPresentation);
-            }
+            this.traverseChildren(ast, view, parentElement, node);
         }
 
         this.bindingsProcessor.setBindings(ast, node, parentElement, view);
 
         return node;
+    }
+
+    private traverseChildren(ast: Node, view: ComponentView, parentElement: HTMLElement, node: HTMLElement) {
+        parentElement.appendChild(node);
+
+        for (const childNode of ast.children) {
+            if (childNode instanceof AttributeNode || childNode instanceof EventBindingNode) {
+                continue;
+            }
+
+            const childPresentation = this.createChild(childNode, view, node);
+            node.appendChild(childPresentation);
+        }
+    }
+
+    private createChildView(ast: ComponentViewNode, view: ComponentView, parentElement: HTMLElement) {
+        const childView = this.createView(ast.compReg.componentType, view);
+
+        view.children.push(childView);
+        return childView.presentation;
+    }
+
+    private createChildElement(ast: ElementNode, view: ComponentView, parentElement: HTMLElement) {
+        const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
+        const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
+
+        const node = this.renderer.createElement(ast.name, attributes);
+        eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
+
+        return node;
+    }
+
+    private createTextElement(ast: TextNode) {
+        const textNode: any = ast.type === TextNodeType.Comment ? this.renderer.createComment(ast.value) : this.renderer.createText(ast.value);
+        return textNode;
     }
 }
 
