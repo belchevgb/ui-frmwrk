@@ -1,7 +1,7 @@
-import { ComponentDef, ViewBuilder, Component } from "../../../src";
-import { resolve } from "../../../src/di";
-import { TextBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/text-strategy";
-import { EventBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/event-strategy";
+import { ComponentDef, ViewBuilder, Component } from "../../src";
+import { resolve } from "../../src/di";
+import { TextBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/text-strategy";
+import { EventBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/event-strategy";
 
 describe("ViewBuilder tests", () => {
     it("should return correct presentation", () => {

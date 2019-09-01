@@ -1,7 +1,7 @@
-import { AttributeBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/attribute-strategy";
-import { TextBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/text-strategy";
-import { EventBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/event-strategy";
-import { Component } from "../../../src";
+import { AttributeBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/attribute-strategy";
+import { TextBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/text-strategy";
+import { EventBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/event-strategy";
+import { Component } from "../../src";
 
 const CLOCK_TIMEOUT = 2000;
 
