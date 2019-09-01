@@ -1,7 +1,7 @@
 import { Lexer } from "../lexer/lexer";
 import { TokenType, ITagToken, IAttributeToken, IStringToken, StringPartType, IEventBindingToken } from "../lexer/token";
 import { ComponentStore, IComponentRegistration } from "../presentation/component";
-import { Injectable } from "../../../di";
+import { Injectable, registerType } from "../../../di";
 
 export class Node {
     public children: Node[] = [];
@@ -147,3 +147,5 @@ export class Parser {
         return child;
     }
 }
+
+registerType(Parser);
