@@ -6,8 +6,12 @@ export function isString(obj: any) {
     return typeof obj === "string";
 }
 
+export function hasValue(val: any) {
+    return val !== undefined && val !== null;
+}
+
 export function validateHasValue(val: any, message = "") {
-    if (val === undefined || val === null) {
+    if (!hasValue(val)) {
         throw new Error(message);
     }
 }

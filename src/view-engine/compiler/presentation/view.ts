@@ -1,6 +1,11 @@
 import { Component, DataStore } from "./component";
 import { BindingStrategyBase } from "../bindings/strategies/binding-strategy.base";
 
+/**
+ * Represents component view.
+ * Persists the DOM representation and tracks for component changes and triggers
+ * change detection.
+ */
 export class ComponentView {
     children: ComponentView[] = [];
     presentation: HTMLElement;

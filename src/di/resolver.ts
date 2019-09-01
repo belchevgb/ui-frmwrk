@@ -1,4 +1,3 @@
-import { getParamTypes } from "./metadata.resolver";
 import { SingletonProvider } from "./providers/singleton-provider";
 import { ValueProvider } from "./providers/value-provider";
 import { InstantiateProvider } from "./providers/instantiate-provider";
@@ -7,6 +6,7 @@ import { dependencyStore } from "./dependency-store";
 import { EntryProvider } from "./providers/entry-provider";
 import { metadataStore } from "./metadata/metadata-store";
 import { IConstructible } from "./interfaces";
+import { getParamTypes } from "../common/metadata";
 
 /**
  * Creates or gets cached singleton.

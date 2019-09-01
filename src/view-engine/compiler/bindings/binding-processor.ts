@@ -8,11 +8,10 @@ import { EventBindingStrategy } from "./strategies/event-strategy";
 
 const INTERPOLATION_PATTERN = /{{[a-z0-9]+}}/i;
 const INTERPOLATION_BRACKETS = ["{{", "}}"];
-const BRACKETS = {
-    OPEN: "(",
-    CLOSE: ")"
-};
 
+/**
+ * Processes the bound properties of a component to the view.
+ */
 @Injectable
 export class BindingProcessor {
     constructor(private renderer: Renderer) {}

@@ -6,10 +6,18 @@ import { Renderer } from "./renderer";
 import { Injectable, resolve } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
 
+/**
+ * Creates view objects.
+ */
 @Injectable
 export class ViewBuilder {
     constructor(private parser: Parser, private renderer: Renderer, private bindingsProcessor: BindingProcessor) { }
 
+    /**
+     * Creates component view.
+     * @param componentType The component type, for which a view will be created.
+     * @param parent The parent view.
+     */
     createView(componentType: any, parent: ComponentView = null) {
         const component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
@@ -33,7 +41,7 @@ export class ViewBuilder {
         let node: any = this.renderer.createText("");
 
         if (ast instanceof ComponentViewNode) {
-            const childView = this.createView(ast.compReg.componentType);
+            const childView = this.createView(ast.compReg.componentType, view);
 
             view.children.push(childView);
             node = childView.presentation;
