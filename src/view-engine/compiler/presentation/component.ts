@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { registerType, Injectable, resolve } from "../../../di";
+import { registerType, Injectable, resolve, registerSingleton } from "../../../di";
 import { defineMetadata } from "../../../common/metadata";
 
 type PropChangeFunc = (changedPropKey: any, prevValue: any, newValue: any) => void;
@@ -98,3 +98,5 @@ export class ComponentStore {
         return this.components.get(selector);
     }
 }
+
+registerSingleton(ComponentStore);

@@ -1,4 +1,4 @@
-import { Injectable } from "../../../di";
+import { Injectable, registerType } from "../../../di";
 import { ComponentView } from "../presentation/view";
 import { Node, TextNode, ElementNode, TextNodeType, InterpolationNode, EventBindingNode } from "../parser/parser";
 import { Renderer } from "../presentation/renderer";
@@ -71,3 +71,5 @@ export class BindingProcessor {
         return view.bindings.get(boundProperty);
     }
 }
+
+registerType(BindingProcessor);

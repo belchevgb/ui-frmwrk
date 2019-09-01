@@ -3,7 +3,7 @@ import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, ComponentStore } from "./com
 import "reflect-metadata";
 import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
-import { Injectable, resolve } from "../../../di";
+import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
 
 /**
@@ -74,3 +74,5 @@ export class ViewBuilder {
         return node;
     }
 }
+
+registerType(ViewBuilder);

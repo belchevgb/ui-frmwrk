@@ -1,5 +1,5 @@
 import { IAttributeToken } from "../lexer/token";
-import { Injectable, Inject } from "../../../di";
+import { Injectable, Inject, registerType } from "../../../di";
 import { AttributeNode } from "../parser/parser";
 
 /**
@@ -35,3 +35,5 @@ export class Renderer {
         return document.createComment(data);
     }
 }
+
+registerType(Renderer);
