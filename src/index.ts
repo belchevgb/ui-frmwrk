@@ -1,16 +1,22 @@
-import { ComponentDef, Component, ComponentStore } from "./view-engine/compiler/presentation/component";
-import { registerType, registerSingleton, resolve, registerValue } from "./di";
-import { Renderer } from "./view-engine/compiler/presentation/renderer";
-import { ViewBuilder } from "./view-engine/compiler/presentation/view-builder";
-import { Lexer } from "./view-engine/compiler/lexer/lexer";
-import { Parser } from "./view-engine/compiler/parser/parser";
-import { BindingProcessor } from "./view-engine/compiler/bindings/binding-processor";
-
+import { registerServices, start } from "./app";
+import { Component, ComponentDef } from "./view-engine/compiler/presentation/component";
 export * from "./exports";
 
-registerType(Renderer);
-registerType(ViewBuilder);
-registerType(Lexer);
-registerType(Parser);
-registerSingleton(ComponentStore);
-registerType(BindingProcessor);
+registerServices();
+
+@ComponentDef({
+    selector: "app",
+    template: `
+        <div>{{counter}}</div>
+        <button (click)="onClick">Click me</button>
+    `
+})
+class AppComponent extends Component {
+    private counter = 0;
+
+    onClick() {
+        this.data.counter = `Marti e HOMO ${this.counter++}`;
+    }
+}
+
+start(AppComponent);

@@ -23,11 +23,10 @@ function createDataStore(): IPropertyBag {
     const store = new Proxy(new DataStore(), {
         set: (obj: any, key, newValue) => {
             const prevValue = obj[key];
-            const isFirstChange = !(key in obj);
 
             obj[key] = newValue;
 
-            if (obj.onChange && !isFirstChange) {
+            if (obj.onChange) {
                 obj.onChange(key, prevValue, newValue);
             }
 
@@ -71,6 +70,9 @@ export interface IComponentRegistration {
     template: string;
     componentType: any;
 }
+
+
+export type Type<T> = new (...args: any[]) => T;
 
 /**
  * Persists component registrations by their selector.
