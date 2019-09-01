@@ -1,4 +1,4 @@
-import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration, InterpolationNode } from "../../../src";
+import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration, InterpolationNode, AttributeNode, EventBindingNode } from "../../../src";
 import { resolve } from "../../../src/di";
 
 describe("Parser tests", () => {
@@ -50,6 +50,35 @@ describe("Parser tests", () => {
         expect(firstTextNode instanceof TextNode).toBe(true);
         expect(interpolationNode instanceof InterpolationNode).toBe(true);
         expect(secondTextNode instanceof TextNode).toBe(true);
+    });
+
+    it("should handle attribute", () => {
+        const html = `<div attr="attr" otherAttr></div>`;
+        const parser: Parser = resolve(Parser);
+        const ast: Node = parser.parse(html);
+
+        const divNode = ast.children[0];
+        const firstAttr = divNode.children[0];
+        const secondAttr = divNode.children[1];
+
+        expect(divNode instanceof ElementNode).toBe(true);
+        expect(firstAttr instanceof AttributeNode).toBe(true);
+        expect(secondAttr instanceof AttributeNode).toBe(true);
+    });
+
+    it("should process event binding", () => {
+        const html = `<div (evName)="eventHandler" otherAttr></div>`;
+        const parser: Parser = resolve(Parser);
+
+        const ast: Node = parser.parse(html);
+
+        const divNode = ast.children[0];
+        const eventBinding = divNode.children[0] as EventBindingNode;
+
+        expect(divNode instanceof ElementNode).toBe(true);
+        expect(eventBinding instanceof EventBindingNode).toBe(true);
+        expect(eventBinding.eventName).toEqual("evName");
+        expect(eventBinding.eventHandlerName).toEqual("eventHandler");
     });
 
     function verifyElementNode(node: ElementNode, expectedName: string, expectedParent: Node) {

@@ -1,6 +1,7 @@
 import { ComponentDef, ViewBuilder, Component } from "../../../src";
 import { resolve } from "../../../src/di";
 import { TextBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/text-strategy";
+import { EventBindingStrategy } from "../../../src/view-engine/compiler/bindings/strategies/event-strategy";
 
 describe("ViewBuilder tests", () => {
     it("should return correct presentation", () => {
@@ -51,5 +52,17 @@ describe("ViewBuilder tests", () => {
         const attribute = divElement.getAttribute("someAttr");
 
         expect(attribute.includes("{{prop}}")).toBe(false);
+    });
+
+    it("should process event binding correctly", () => {
+        @ComponentDef({ selector: "component-selector", template: `<div (click)="handler"></div>`})
+        class CustomComponent extends Component { }
+
+        const builder: ViewBuilder = resolve(ViewBuilder);
+        const view = builder.createView(CustomComponent);
+        const bindings = view.bindings.get("click");
+
+        expect(bindings.length).toEqual(1);
+        expect(bindings[0] instanceof EventBindingStrategy);
     });
 });

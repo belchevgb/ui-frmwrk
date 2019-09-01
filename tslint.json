@@ -5,7 +5,9 @@
         "ban": [
             true,
             "setInterval",
-            "setTimeout"
+            "setTimeout",
+            "fit",
+            "fdescribe"
         ],
         "class-name": true,
         "comment-format": [true,

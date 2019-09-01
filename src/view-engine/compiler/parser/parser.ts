@@ -1,16 +1,16 @@
 import { Lexer } from "../lexer/lexer";
-import { TokenType, ITagToken, IAttribute, IStringToken, StringPartType } from "../lexer/token";
+import { TokenType, ITagToken, IAttributeToken, IStringToken, StringPartType, IEventBindingToken } from "../lexer/token";
 import { ComponentStore, IComponentRegistration } from "../presentation/component";
 import { Injectable } from "../../../di";
 
 export class Node {
     public children: Node[] = [];
 
-    constructor(public parent: Node) { }
+    constructor(public parent: Node = null) { }
 }
 
 export class ElementNode extends Node {
-    constructor(public parent: Node, public name: string, public attributes: IAttribute[]) {
+    constructor(public parent: Node, public name: string) {
         super(parent);
     }
 }
@@ -29,6 +29,18 @@ export class ComponentViewNode extends Node {
 export class TextNode extends Node {
     constructor(public parent: Node, public value: string, public type: TextNodeType) {
         super(parent);
+    }
+}
+
+export class AttributeNode extends Node {
+    constructor(public key: string, public value: string) {
+        super();
+    }
+}
+
+export class EventBindingNode extends Node {
+    constructor(public eventName: string, public eventHandlerName: string) {
+        super();
     }
 }
 
@@ -51,6 +63,14 @@ export class Parser {
 
         while (token.type !== TokenType.End) {
             switch (token.type) {
+                case TokenType.Attribute:
+                    this.processAttribute(currentNode, token);
+                    break;
+
+                case TokenType.EventBinding:
+                    this.processEventBinding(currentNode, token);
+                    break;
+
                 case TokenType.SelfclosingTag:
                     this.createChildElementNode(currentNode, token as ITagToken);
                     break;
@@ -78,6 +98,14 @@ export class Parser {
         return root;
     }
 
+    private processAttribute(node: Node, token: IAttributeToken) {
+        node.children.push(new AttributeNode(token.key, token.value));
+    }
+
+    private processEventBinding(node: Node, token: IEventBindingToken) {
+        node.children.push(new EventBindingNode(token.eventName, token.eventHandler));
+    }
+
     private createTextNode(parent: Node, token: IStringToken, type: TextNodeType) {
         if (token.stringParts && token.stringParts.length) {
             token.stringParts.forEach(p => {
@@ -102,7 +130,7 @@ export class Parser {
         if (compReg) {
             child = new ComponentViewNode(parent, token.name, compReg);
         } else {
-            child = new ElementNode(parent, token.name, token.attributes || []);
+            child = new ElementNode(parent, token.name);
         }
 
         if (parent) {

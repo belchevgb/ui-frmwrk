@@ -1,10 +1,11 @@
 import { BindingStrategyBase } from "./binding-strategy.base";
+import { Component } from "../../presentation/component";
 
 export class AttributeBindingStrategy extends BindingStrategyBase<HTMLElement> {
     private currentValue = "";
 
-    constructor(element: HTMLElement, private attributeName: string) {
-        super(element);
+    constructor(element: HTMLElement, private attributeName: string, component: Component) {
+        super(element, component);
     }
 
     update(value: any): void {
