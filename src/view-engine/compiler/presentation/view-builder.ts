@@ -51,7 +51,7 @@ export class ViewBuilder {
 
             node = this.renderer.createElement(ast.name, attributes);
             eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
-        } else if (ast instanceof TextNode && ast.type === TextNodeType.Comment) {
+        } else if (ast instanceof TextNode) {
             const textNode: any = ast.type === TextNodeType.Comment ? this.renderer.createComment(ast.value) : this.renderer.createText(ast.value);
             node = textNode;
         }

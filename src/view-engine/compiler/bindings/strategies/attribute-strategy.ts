@@ -24,7 +24,7 @@ export class AttributeBindingStrategy extends BindingStrategyBase<HTMLElement> {
         let attributeValue = this.element.getAttribute(this.attributeName);
         const newValueTokens = attributeValue
             .split(" ")
-            .filter(x => x !== this.currentValue);
+            .filter(x => x !== this.currentValue.toString());
 
         newValueTokens.push(value);
         attributeValue = newValueTokens.join(" ");
