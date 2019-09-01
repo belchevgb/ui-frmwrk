@@ -1,7 +1,7 @@
-import { IPosition, TokenType, IAttribute, IToken, IStringToken, ITagToken, IStringPart, StringPartType } from "./token";
+import { IPosition, TokenType, IAttributeToken, IToken, IStringToken, ITagToken, IStringPart, StringPartType, IEventBindingToken, AttributeType } from "./token";
 import { Injectable } from "../../../di";
 
-enum Context {
+const enum Context {
     None,
     InOpenTag,
     Text,
@@ -22,7 +22,9 @@ const identifiers = {
     quote: '"',
     closeTagStart: "</",
     interpolationStart: "{{",
-    interpolationEnd: "}}"
+    interpolationEnd: "}}",
+    openBracket: "(",
+    closeBracket: ")"
 };
 
 const matchers = {
@@ -63,6 +65,10 @@ export class Lexer {
             return this.createCommentToken();
         }
 
+        if (this.shouldGetAttribute()) {
+            return this.createAttributeToken();
+        }
+
         if (this.startsOpenTag()) {
             return this.createOpenTagToken();
         }
@@ -84,6 +90,34 @@ export class Lexer {
         token.stringParts = this.getContentParts(token.value);
 
         return token;
+    }
+
+    private createAttributeToken() {
+        const attribute = this.getAttribute();
+        const isEventBinding = attribute.key.startsWith(identifiers.openBracket) &&
+                               attribute.key.endsWith(identifiers.closeBracket);
+        const tryProcessEndOfTag = () => {
+            this.skipWhiteSpace();
+            if (this.isTagEnd() || this.isSelfClosingTagEnd(null)) {
+                this.setContext(Context.AfterOpenTag);
+            }
+        };
+
+        if (isEventBinding) {
+            const eventBinding: IEventBindingToken = { type: TokenType.EventBinding, start: attribute.start };
+            const eventName = attribute.key
+                .replace(identifiers.openBracket, "")
+                .replace(identifiers.closeBracket, "");
+
+            eventBinding.eventName = eventName;
+            eventBinding.eventHandler = attribute.value;
+
+            tryProcessEndOfTag();
+            return eventBinding;
+        }
+
+        tryProcessEndOfTag();
+        return attribute;
     }
 
     private getContentParts(content: string): IStringPart[] {
@@ -137,18 +171,12 @@ export class Lexer {
 
     private createOpenTagToken() {
         const token = this.createToken(TokenType.OpenTag) as ITagToken;
-        token.attributes = [];
 
         this.setContext(Context.InOpenTag);
         this.skipChars(identifiers.tagOpenBracket.length);
         this.skipWhiteSpace();
         this.initTagData(token);
 
-        if (this.context === Context.InOpenTag) {
-            token.attributes = this.getAttributes(token);
-        }
-
-        this.setContext(Context.AfterOpenTag);
         return token;
     }
 
@@ -166,42 +194,36 @@ export class Lexer {
         return token;
     }
 
-    private getAttributes(token: ITagToken) {
-        const attributes: IAttribute[] = [];
+    private getAttribute() {
+        const attribute: IAttributeToken = this.createToken(TokenType.Attribute);
 
-        this.setContext(Context.BeforeAttributeKey);
-
-        while (!this.isTagEnd() && !this.isSelfClosingTagEnd(token)) {
-            const attribute: IAttribute = { key: null, value: null };
-
-            if (this.context === Context.BeforeAttributeKey) {
-                this.skipWhiteSpace();
-
-                attribute.key = this.consumeUntil((ch) => ch !== identifiers.attributeKeyValueDelimiter && !isWhiteSpace(ch));
-                if (isWhiteSpace(this.currentChar())) {
-                    attributes.push(attribute);
-                    continue;
-                }
-
-                this.setContext(Context.BeforeAttributeValue);
-                this.skipChars(identifiers.attributeKeyValueDelimiter.length);
-            }
-
-            this.skipChars(identifiers.quote.length);
-
-            attribute.value = this.consumeUntil(c => c !== identifiers.quote);
-            attributes.push(attribute);
-
-            this.skipChars(identifiers.quote.length);
-            this.setContext(Context.BeforeAttributeKey);
+        if (this.context === Context.BeforeAttributeKey) {
             this.skipWhiteSpace();
+
+            attribute.key = this.consumeUntil((ch) => ch !== identifiers.attributeKeyValueDelimiter && !isWhiteSpace(ch) && !this.isTagEnd() && !this.isSelfClosingTagEnd(null));
         }
 
-        return attributes;
+        if (this.context === Context.AfterOpenTag) {
+            return attribute;
+        }
+
+        this.setContext(Context.BeforeAttributeValue);
+        this.skipChars(identifiers.attributeKeyValueDelimiter.length);
+        this.skipChars(identifiers.quote.length);
+
+        attribute.value = this.consumeUntil(c => c !== identifiers.quote);
+
+        this.skipChars(identifiers.quote.length);
+        this.setContext(Context.BeforeAttributeKey);
+        this.skipWhiteSpace();
+
+        return attribute;
     }
 
     private initTagData(token: ITagToken) {
         let name = "";
+
+        this.setContext(Context.BeforeAttributeKey);
 
         while (!this.isEnd()) {
             let shouldBreak = false;
@@ -230,7 +252,11 @@ export class Lexer {
         if (this.currentIndex + identifiers.selfClosingTagEnd.length <= this.length() &&
             this.template.substr(this.currentIndex, identifiers.selfClosingTagEnd.length) === identifiers.selfClosingTagEnd) {
             this.skipChars(identifiers.selfClosingTagEnd.length);
-            token.type = TokenType.SelfclosingTag;
+
+            if (token) {
+                token.type = TokenType.SelfclosingTag;
+            }
+
             return true;
         }
 
@@ -238,10 +264,19 @@ export class Lexer {
     }
 
     private isTagEnd() {
+        const isInsideTag = this.context === Context.InOpenTag ||
+                            this.context === Context.BeforeAttributeKey ||
+                            this.context === Context.BeforeAttributeValue;
+
         if (this.currentIndex + identifiers.tagCloseBracket.length <= this.length() &&
             this.template.substr(this.currentIndex, identifiers.tagCloseBracket.length) === identifiers.tagCloseBracket) {
                 this.skipChars(identifiers.tagCloseBracket.length);
-                return true;
+
+            if (isInsideTag) {
+                this.setContext(Context.AfterOpenTag);
+            }
+
+            return true;
         }
 
         return false;
@@ -249,6 +284,10 @@ export class Lexer {
 
     private setContext(ctx: Context) {
         this.context = ctx;
+    }
+
+    private shouldGetAttribute() {
+        return this.context === Context.InOpenTag || this.context === Context.BeforeAttributeKey;
     }
 
     private startsOpenTag() {

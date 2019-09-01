@@ -1,5 +1,5 @@
 import { Lexer } from "../../../src/view-engine/compiler/lexer/lexer";
-import { IStringToken, TokenType, ITagToken, StringPartType } from "../../../src/view-engine/compiler/lexer/token";
+import { IStringToken, TokenType, ITagToken, StringPartType, IAttributeToken } from "../../../src/view-engine/compiler/lexer/token";
 
 describe("Lexer tests", () => {
     describe("Should process comments correctly", () => {
@@ -41,62 +41,26 @@ describe("Lexer tests", () => {
                 expect(token.type).toEqual(TokenType.OpenTag);
                 expect(token.name).toEqual("div");
                 expect(token.start).toEqual({ row: 0, col: 0 });
-                expect(token.attributes).toEqual([]);
             }
         });
 
-        it("process open tag with attributes", () => {
-            const tagName = "div";
-            const tag = `<${tagName} a1 a2="v2" a3 a4="v4">`;
+        it("Shoul process open tag with attributes correctly", () => {
+            const html = `<div attr1="attr" attr2></div>`;
             const lexer = new Lexer();
-            lexer.init(tag);
-            const token = lexer.nextToken() as ITagToken;
 
-            expect(token.type).toEqual(TokenType.OpenTag);
-            expect(token.name).toEqual("div");
-            expect(token.start).toEqual({ row: 0, col: 0 });
+            lexer.init(html);
 
-            const attrs = token.attributes;
+            const tagToken = lexer.nextToken() as ITagToken;
+            expect(tagToken.type).toEqual(TokenType.OpenTag);
 
-            expect(attrs[0]).toEqual({ key: "a1", value: null });
-            expect(attrs[1]).toEqual({ key: "a2", value: "v2" });
-            expect(attrs[2]).toEqual({ key: "a3", value: null });
-            expect(attrs[3]).toEqual({ key: "a4", value: "v4" });
-        });
+            const firstAttr = lexer.nextToken() as IAttributeToken;
+            expect(firstAttr.type).toEqual(TokenType.Attribute);
+            expect(firstAttr.key).toEqual("attr1");
+            expect(firstAttr.value).toEqual("attr");
 
-        it("process self-closing tag without attributes", () => {
-            const tagName = "div";
-            const tags = [`<${tagName} />`, `< ${tagName} />`];
-
-            for (const tag of tags) {
-                const lexer = new Lexer();
-                lexer.init(tag);
-                const token = lexer.nextToken() as ITagToken;
-
-                expect(token.type).toEqual(TokenType.SelfclosingTag);
-                expect(token.name).toEqual("div");
-                expect(token.start).toEqual({ row: 0, col: 0 });
-                expect(token.attributes).toEqual([]);
-            }
-        });
-
-        it("process self-closing tag with attributes", () => {
-            const tagName = "div";
-            const tag = `<${tagName} a1 a2="v2" a3 a4="v4" />`;
-            const lexer = new Lexer();
-            lexer.init(tag);
-            const token = lexer.nextToken() as ITagToken;
-
-            expect(token.type).toEqual(TokenType.SelfclosingTag);
-            expect(token.name).toEqual("div");
-            expect(token.start).toEqual({ row: 0, col: 0 });
-
-            const attrs = token.attributes;
-
-            expect(attrs[0]).toEqual({ key: "a1", value: null });
-            expect(attrs[1]).toEqual({ key: "a2", value: "v2" });
-            expect(attrs[2]).toEqual({ key: "a3", value: null });
-            expect(attrs[3]).toEqual({ key: "a4", value: "v4" });
+            const secondAttr = lexer.nextToken() as IAttributeToken;
+            expect(secondAttr.type).toEqual(TokenType.Attribute);
+            expect(secondAttr.key).toEqual("attr2");
         });
 
         it("process close tag", () => {
@@ -150,9 +114,9 @@ describe("Lexer tests", () => {
 
         it("tokenize sample html", () => {
             const html = `
-            <div>
+            <div attr="attr">
                 content
-                <h1>dsadas</h1>
+                <h1 attr2>dsadas</h1>
                 <br />
                 <!-- comment -->
             </div>`;
@@ -164,10 +128,16 @@ describe("Lexer tests", () => {
             expect(token.type).toEqual(TokenType.OpenTag);
 
             token = lexer.nextToken();
+            expect(token.type).toEqual(TokenType.Attribute);
+
+            token = lexer.nextToken();
             expect(token.type).toEqual(TokenType.Content);
 
             token = lexer.nextToken();
             expect(token.type).toEqual(TokenType.OpenTag);
+
+            token = lexer.nextToken();
+            expect(token.type).toEqual(TokenType.Attribute);
 
             token = lexer.nextToken();
             expect(token.type).toEqual(TokenType.Content);

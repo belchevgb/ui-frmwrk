@@ -1,10 +1,11 @@
-import { IAttribute } from "../lexer/token";
+import { IAttributeToken } from "../lexer/token";
 import { Injectable, Inject } from "../../../di";
+import { AttributeNode } from "../parser/parser";
 
 @Injectable
 export class Renderer {
 
-    createElement(name: string, attributes: IAttribute[] = []): HTMLElement {
+    createElement(name: string, attributes: AttributeNode[] = []): HTMLElement {
         const element = document.createElement(name);
         attributes.forEach(a => element.setAttribute(a.key, a.value));
 

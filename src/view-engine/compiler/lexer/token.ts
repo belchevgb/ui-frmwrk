@@ -4,7 +4,14 @@ export const enum TokenType {
     CloseTag,
     SelfclosingTag,
     Comment,
-    Content
+    Content,
+    Attribute,
+    EventBinding
+}
+
+export const enum AttributeType {
+    Attribute,
+    EventBinding
 }
 
 export interface IPosition {
@@ -12,9 +19,14 @@ export interface IPosition {
     col: number;
 }
 
-export interface IAttribute {
-    key: string;
-    value: string;
+export interface IAttributeToken extends IToken {
+    key?: string;
+    value?: string;
+}
+
+export interface IEventBindingToken extends IToken {
+    eventName?: string;
+    eventHandler?: string;
 }
 
 export interface IToken {
@@ -24,7 +36,6 @@ export interface IToken {
 
 export interface ITagToken extends IToken {
     name: string;
-    attributes?: IAttribute[];
 }
 
 export interface IStringToken extends IToken {

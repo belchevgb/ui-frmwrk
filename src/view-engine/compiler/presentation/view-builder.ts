@@ -1,4 +1,4 @@
-import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode } from "../parser/parser";
+import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode, AttributeNode, EventBindingNode } from "../parser/parser";
 import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, ComponentStore } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
@@ -38,7 +38,11 @@ export class ViewBuilder {
             view.children.push(childView);
             node = childView.presentation;
         } else if (ast instanceof ElementNode) {
-            node = this.renderer.createElement(ast.name, ast.attributes);
+            const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
+            const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
+
+            node = this.renderer.createElement(ast.name, attributes);
+            eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
         } else if (ast instanceof TextNode && ast.type === TextNodeType.Comment) {
             const textNode: any = ast.type === TextNodeType.Comment ? this.renderer.createComment(ast.value) : this.renderer.createText(ast.value);
             node = textNode;
@@ -48,6 +52,10 @@ export class ViewBuilder {
             parentElement.appendChild(node);
 
             for (const childNode of ast.children) {
+                if (childNode instanceof AttributeNode || childNode instanceof EventBindingNode) {
+                    continue;
+                }
+
                 const childPresentation = this.createChildElement(childNode, view, node);
                 node.appendChild(childPresentation);
             }
