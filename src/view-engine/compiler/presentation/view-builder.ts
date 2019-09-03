@@ -1,10 +1,12 @@
 import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode, AttributeNode, EventBindingNode } from "../parser/parser";
-import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, ComponentStore } from "./component";
+import { IComponentConfig, COMPONENT_CONFIG_MD_KEY } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
 import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
+
+// TODO: optimise event and prop bindings (filter func)
 
 /**
  * Creates view objects.
@@ -72,6 +74,14 @@ export class ViewBuilder {
     private createChildView(ast: ComponentViewNode, view: ComponentView, parentElement: HTMLElement) {
         const childView = this.createView(ast.compReg.componentType, view);
 
+        ast.children.forEach(c => {
+            if (c instanceof AttributeNode) {
+                this.bindingsProcessor.trySetComponentPropBinding(view, childView, c);
+            } else if (c instanceof EventBindingNode) {
+                this.bindingsProcessor.trySetComponentEventBinding(view, childView, c);
+            }
+        });
+
         view.children.push(childView);
         return childView.presentation;
     }
@@ -79,8 +89,8 @@ export class ViewBuilder {
     private createChildElement(ast: ElementNode, view: ComponentView, parentElement: HTMLElement) {
         const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
         const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
-
         const node = this.renderer.createElement(ast.name, attributes);
+
         eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
 
         return node;

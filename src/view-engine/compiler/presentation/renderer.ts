@@ -1,5 +1,4 @@
-import { IAttributeToken } from "../lexer/token";
-import { Injectable, Inject, registerType } from "../../../di";
+import { Injectable, registerType } from "../../../di";
 import { AttributeNode } from "../parser/parser";
 
 /**

@@ -1,6 +1,6 @@
 import { IConstructible } from "./interfaces";
 import { resolveAll as activatorResolveAll, resolveKey as activatorResolve } from "./resolver";
-import { dependencyStore, IEntryRecord } from "./dependency-store";
+import { dependencyStore } from "./dependency-store";
 import { InstantiateProvider } from "./providers/instantiate-provider";
 import { SingletonProvider } from "./providers/singleton-provider";
 import { ValueProvider } from "./providers/value-provider";
