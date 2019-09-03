@@ -1,13 +1,17 @@
 import { Injectable, registerType } from "../../../di";
 import { ComponentView } from "../presentation/view";
-import { Node, TextNode, ElementNode, TextNodeType, InterpolationNode, EventBindingNode } from "../parser/parser";
+import { Node, ElementNode, InterpolationNode, EventBindingNode, AttributeNode } from "../parser/parser";
 import { Renderer } from "../presentation/renderer";
 import { TextBindingStrategy } from "./strategies/text-strategy";
 import { AttributeBindingStrategy } from "./strategies/attribute-strategy";
 import { EventBindingStrategy } from "./strategies/event-strategy";
+import { ComponentEventBindingStrategy } from "./strategies/component-event-binding-strategy";
+import { ComponentPropertyBindingStrategy } from "./strategies/component-property-binding-strategy";
 
 const INTERPOLATION_PATTERN = /{{[a-z0-9]+}}/i;
 const INTERPOLATION_BRACKETS = ["{{", "}}"];
+
+// TODO: handle event names collision in strategies dictionary
 
 /**
  * Processes the bound properties of a component to the view.
@@ -28,6 +32,21 @@ export class BindingProcessor {
 
             strategies.push(strategy);
         }
+    }
+
+    trySetComponentEventBinding(view: ComponentView, childView: ComponentView, eventBinding: EventBindingNode) {
+        const strategy = new ComponentEventBindingStrategy(null, view.component, eventBinding.eventName, eventBinding.eventHandlerName, childView.component);
+        const key = `${eventBinding.eventName}_${eventBinding.eventHandlerName}`;
+        const strategies = this.getBindingStrategiesCollection(key, view);
+
+        strategies.push(strategy);
+    }
+
+    trySetComponentPropBinding(view: ComponentView, childView: ComponentView, propBinding: AttributeNode) {
+        const strategy = new ComponentPropertyBindingStrategy(null, view.component, childView.component, propBinding.key, propBinding.value);
+        const strategies = this.getBindingStrategiesCollection(propBinding.value, view);
+
+        strategies.push(strategy);
     }
 
     private trySetAttributeBindings(node: Node, nodeElement: HTMLElement, view: ComponentView) {

@@ -1,4 +1,4 @@
-import { IPosition, TokenType, IAttributeToken, IToken, IStringToken, ITagToken, IStringPart, StringPartType, IEventBindingToken, AttributeType } from "./token";
+import { IPosition, TokenType, IAttributeToken, IToken, IStringToken, ITagToken, IStringPart, StringPartType, IEventBindingToken } from "./token";
 import { Injectable, registerType } from "../../../di";
 
 const enum Context {
@@ -39,6 +39,8 @@ function isWhiteSpace(char: string) {
 function isNewLine(char: string) {
     return matchers.newLine.test(char);
 }
+
+// TODO: handle ' in template
 
 /**
  * Tokenizes given template.
