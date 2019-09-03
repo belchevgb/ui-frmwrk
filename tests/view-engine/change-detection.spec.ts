@@ -1,5 +1,6 @@
 import { Component, ComponentDef, ViewBuilder } from "../../src";
 import { resolve } from "../../src/di";
+import { ComponentEvent } from "../../src/view-engine/compiler/presentation/component-event";
 
 const CLOCK_TICK_TIMEOUT = 1000;
 
@@ -75,5 +76,59 @@ describe("Change detection and bindings tests", () => {
             jasmine.clock().tick(CLOCK_TICK_TIMEOUT);
             expect(div.getAttribute("attr")).toEqual(`${i}`);
         }
+    });
+
+    it("component event binding should work correctly", () => {
+        const eventText = "button clicked";
+
+        @ComponentDef({ selector: "component-selector", template: `<button (click)="buttonClicked">Trigger event</button>`})
+        class CustomComponent extends Component {
+            click = new ComponentEvent();
+
+            buttonClicked() {
+                this.click.raise(eventText);
+            }
+        }
+
+        @ComponentDef({ selector: "other-selector", template: `<component-selector (click)="onClick"></component-selector><span>{{text}}</span>` })
+        class OtherComponent extends Component {
+            onClick(text: string) {
+                this.data.text = text;
+            }
+        }
+
+        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
+        const view = viewBuilder.createView(OtherComponent);
+
+        const button = view.presentation.getElementsByTagName("button")[0];
+        const span = view.presentation.getElementsByTagName("span")[0];
+
+        button.click();
+        jasmine.clock().tick(CLOCK_TICK_TIMEOUT);
+
+        expect(span.innerText.trim()).toEqual(eventText);
+    });
+
+    it("component property binding should work correctly", () => {
+        const propChangedText = "prop changed";
+
+        @ComponentDef({ selector: "component-selector", template: `<span>{{boundProp}}</span>`})
+        class CustomComponent extends Component {}
+
+        @ComponentDef({ selector: "other-selector", template: `<component-selector boundProp="parentProp"></component-selector><button (click)="onClick">Trigger property change</button>` })
+        class OtherComponent extends Component {
+            onClick() {
+                this.data.parentProp = propChangedText;
+            }
+        }
+
+        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
+        const view = viewBuilder.createView(OtherComponent);
+        const span = view.presentation.getElementsByTagName("span")[0];
+        const button = view.presentation.getElementsByTagName("button")[0];
+
+        button.click();
+        jasmine.clock().tick(CLOCK_TICK_TIMEOUT);
+        expect(span.innerText.trim()).toEqual(propChangedText);
     });
 });
