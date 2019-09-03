@@ -1,5 +1,5 @@
 import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode, AttributeNode, EventBindingNode } from "../parser/parser";
-import { IComponentConfig, COMPONENT_CONFIG_MD_KEY } from "./component";
+import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, Component } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
@@ -21,7 +21,7 @@ export class ViewBuilder {
      * @param parent The parent view.
      */
     createView(componentType: any, parent: ComponentView = null) {
-        const component = resolve(componentType);
+        const component: Component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
         const ast = this.parser.parse(config.template);
         const view = new ComponentView(parent, component);
@@ -36,6 +36,7 @@ export class ViewBuilder {
 
         ast.children.forEach(c => this.createChild(c, view, viewPresentation));
         view.presentation = viewPresentation;
+        view.component.presentation = viewPresentation;
     }
 
     private createChild(ast: Node, view: ComponentView, parentElement: HTMLElement) {

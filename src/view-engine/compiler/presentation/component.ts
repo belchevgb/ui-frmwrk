@@ -61,6 +61,7 @@ export function ComponentDef(config: IComponentConfig) {
  * Base class for all the components in the application.
  */
 export abstract class Component {
+    presentation: HTMLElement;
     data = createDataStore();
 }
 
@@ -68,7 +69,6 @@ export interface IComponentRegistration {
     template: string;
     componentType: any;
 }
-
 
 export type Type<T> = new (...args: any[]) => T;
 
