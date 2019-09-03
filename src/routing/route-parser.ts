@@ -1,19 +1,5 @@
-import { registerType } from "../di";
-
-const enum RouteSegmentType {
-    Default,
-    Param
-}
-
-interface IRouteSegment {
-    value: string;
-    type: RouteSegmentType;
-}
-
-interface IPathData {
-    queryParams: { [key: string]: string };
-    segments: IRouteSegment[];
-}
+import { registerType, Injectable } from "../di";
+import { IPathData, IRouteSegment, RouteSegmentType } from "./interfaces";
 
 const queryStringStartSign = "?";
 const queryParamDelimiter = "&";
@@ -21,6 +7,7 @@ const queryParamKeyValueDelimiter = "=";
 const pathSegmentDelimiter = "/";
 const routeParamMark = ":";
 
+@Injectable
 export class RouteParser {
     parse(routePath: string): IPathData {
         const splittedRoute = routePath.split(queryStringStartSign, 2);
