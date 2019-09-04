@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { registerType, Injectable, resolve, registerSingleton } from "../../../di";
 import { defineMetadata } from "../../../common/metadata";
+import { ComponentView } from "./view";
 
 type PropChangeFunc = (changedPropKey: any, prevValue: any, newValue: any) => void;
 
@@ -61,7 +62,7 @@ export function ComponentDef(config: IComponentConfig) {
  * Base class for all the components in the application.
  */
 export abstract class Component {
-    presentation: HTMLElement;
+    view: ComponentView;
     data = createDataStore();
 }
 

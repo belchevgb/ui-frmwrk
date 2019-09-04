@@ -3,6 +3,7 @@ import { Type, Component } from "../view-engine/compiler/presentation/component"
 export interface IRoute {
     path: string;
     component: Type<Component>;
+    routeWindowName?: string;
 }
 
 export const enum RouteSegmentType {

@@ -12,7 +12,7 @@ export class NavigationLinkComponent extends Component implements IComponentInit
     }
 
     onComponentInit(): void {
-        this.presentation.addEventListener("click", () => {
+        this.view.presentation.addEventListener("click", () => {
             const path = this.data.path;
             this.router.navigate(path);
         });

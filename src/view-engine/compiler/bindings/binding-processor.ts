@@ -43,6 +43,7 @@ export class BindingProcessor {
     }
 
     trySetComponentPropBinding(view: ComponentView, childView: ComponentView, propBinding: AttributeNode) {
+        // TODO: set value directly instead of parent component prop
         const strategy = new ComponentPropertyBindingStrategy(null, view.component, childView.component, propBinding.key, propBinding.value);
         const strategies = this.getBindingStrategiesCollection(propBinding.value, view);
 

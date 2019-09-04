@@ -36,7 +36,7 @@ export class ViewBuilder {
 
         ast.children.forEach(c => this.createChild(c, view, viewPresentation));
         view.presentation = viewPresentation;
-        view.component.presentation = viewPresentation;
+        view.component.view = view;
     }
 
     private createChild(ast: Node, view: ComponentView, parentElement: HTMLElement) {
