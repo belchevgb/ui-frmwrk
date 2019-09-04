@@ -5,6 +5,7 @@ import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
 import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
+import { lifecycleHookNames } from "./lifecycle-hooks";
 
 // TODO: optimise event and prop bindings (filter func)
 

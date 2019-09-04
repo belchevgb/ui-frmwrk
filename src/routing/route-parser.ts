@@ -21,12 +21,15 @@ export class RouteParser {
 
     private getQueryParams(queryString: string) {
         const params = {};
-        const segments = queryString.split(queryParamDelimiter);
 
-        segments.forEach(s => {
-            const [key, value] = s.split(queryParamKeyValueDelimiter);
-            params[key] = value;
-        });
+        if (queryString.length) {
+            const segments = queryString.split(queryParamDelimiter);
+
+            segments.forEach(s => {
+                const [key, value] = s.split(queryParamKeyValueDelimiter);
+                params[key] = value;
+            });
+        }
 
         return params;
     }

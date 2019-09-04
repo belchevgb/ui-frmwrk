@@ -1,4 +1,4 @@
-import { Injectable } from "../di";
+import { Injectable, registerType } from "../di";
 import { RouteParser } from "./route-parser";
 import { IPathData, RouteSegmentType } from "./interfaces";
 import { RoutingManager, IParsedRoute } from "./routing-manager";
@@ -47,3 +47,5 @@ export class RouteMatcher {
         return true;
     }
 }
+
+registerType(RouteMatcher);

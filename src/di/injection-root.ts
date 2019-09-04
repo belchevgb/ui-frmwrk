@@ -61,3 +61,7 @@ export function resolve(dependencyKey: any) {
 export function resolveAll(dependencyKey: any) {
     return activatorResolveAll(dependencyKey);
 }
+
+export function clearCachedObjects() {
+    dependencyStore.clearCachedObjects();
+}

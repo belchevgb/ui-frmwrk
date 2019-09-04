@@ -9,7 +9,11 @@ export class ComponentPropertyBindingStrategy extends BindingStrategyBase<HTMLEl
         super(element, component);
     }
 
-    update(_: any): void {
-        this.childComponent.data[this.childPropName] = this.component.data[this.parentPropName];
+    update(val: any): void {
+        if (this.parentPropName in this.component.data) {
+            return this.childComponent.data[this.childPropName] = this.component.data[this.parentPropName];
+        }
+
+        this.childComponent.data[this.childPropName] = val;
     }
 }

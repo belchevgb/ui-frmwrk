@@ -54,6 +54,8 @@ export function ComponentDef(config: IComponentConfig) {
         defineMetadata(COMPONENT_CONFIG_MD_KEY, config, componentType);
 
         ComponentStore.registerComponent(config.selector, { componentType, template: config.template });
+
+        // TODO: Revise
         registerType(componentType);
     };
 }
@@ -62,6 +64,7 @@ export function ComponentDef(config: IComponentConfig) {
  * Base class for all the components in the application.
  */
 export abstract class Component {
+    // TODO: revise
     view: ComponentView;
     data = createDataStore();
 }

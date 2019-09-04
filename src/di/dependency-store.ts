@@ -73,6 +73,10 @@ class DependencyStore {
         return this.instanceStore.get(entryProvider);
     }
 
+    clearCachedObjects() {
+        this.instanceStore = new Map<EntryProvider, any>();
+    }
+
     private getRegistration(key: any, validate = true) {
         const existingRegistration = this.entryRegistrations.get(key) as EntryProvider[];
         if (validate) {

@@ -55,7 +55,7 @@ export class InterpolationNode extends Node {
  */
 @Injectable
 export class Parser {
-    constructor(private lexer: Lexer, private compStore: ComponentStore) { }
+    constructor(private lexer: Lexer) { }
 
     /**
      * Builds AST from a template.
@@ -131,7 +131,7 @@ export class Parser {
     }
 
     private createChildElementNode(parent: Node, token: ITagToken) {
-        const compReg = this.compStore.getRegistration(token.name);
+        const compReg = ComponentStore.getRegistration(token.name);
         let child: Node;
 
         if (compReg) {

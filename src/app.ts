@@ -13,12 +13,12 @@ export class App {
         const routingManager: RoutingManager = resolve(RoutingManager);
         routingManager.registerRoutes(routes);
     }
-}
 
-export function start(rootComponentType: Type<any>) {
-    const element = document.getElementById(ROOT_ELEMENT_SELECTOR);
-    const builder: ViewBuilder = resolve(ViewBuilder);
-    const mainView = builder.createView(rootComponentType);
-
-    element.appendChild(mainView.presentation);
+    static start(rootComponentType: Type<any>) {
+        const element = document.getElementById(ROOT_ELEMENT_SELECTOR);
+        const builder: ViewBuilder = resolve(ViewBuilder);
+        const mainView = builder.createView(rootComponentType);
+    
+        element.appendChild(mainView.presentation);
+    }
 }

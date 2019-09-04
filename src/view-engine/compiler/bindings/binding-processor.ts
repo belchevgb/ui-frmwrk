@@ -47,6 +47,7 @@ export class BindingProcessor {
         const strategy = new ComponentPropertyBindingStrategy(null, view.component, childView.component, propBinding.key, propBinding.value);
         const strategies = this.getBindingStrategiesCollection(propBinding.value, view);
 
+        strategy.update(propBinding.value);
         strategies.push(strategy);
     }
 
