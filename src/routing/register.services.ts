@@ -6,10 +6,12 @@ import { RouteParser } from "./route-parser";
 import { Router } from "./router";
 import { RoutingManager } from "./routing-manager";
 
-registerType(NavigationLinkComponent);
-registerType(RouteWindowComponent);
+export function initRoutingDI() {
+    registerType(NavigationLinkComponent);
+    registerType(RouteWindowComponent);
 
-registerType(RouteMatcher);
-registerType(RouteParser);
-registerSingleton(Router);
-registerSingleton(RoutingManager);
+    registerType(RouteMatcher);
+    registerType(RouteParser);
+    registerSingleton(Router);
+    registerSingleton(RoutingManager);
+}
