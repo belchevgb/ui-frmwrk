@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { registerType, Injectable, resolve, registerSingleton } from "../../../di";
+import { registerType } from "../../../di";
 import { defineMetadata } from "../../../common/metadata";
 import { ComponentView } from "./view";
 
@@ -54,9 +54,6 @@ export function ComponentDef(config: IComponentConfig) {
         defineMetadata(COMPONENT_CONFIG_MD_KEY, config, componentType);
 
         ComponentStore.registerComponent(config.selector, { componentType, template: config.template });
-
-        // TODO: Revise
-        registerType(componentType);
     };
 }
 

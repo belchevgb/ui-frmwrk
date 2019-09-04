@@ -47,5 +47,3 @@ export class RouteMatcher {
         return true;
     }
 }
-
-registerType(RouteMatcher);

@@ -383,5 +383,3 @@ export class Lexer {
         return char;
     }
 }
-
-registerType(Lexer);

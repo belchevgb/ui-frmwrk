@@ -92,5 +92,3 @@ export class BindingProcessor {
         return view.bindings.get(boundProperty);
     }
 }
-
-registerType(BindingProcessor);

@@ -147,5 +147,3 @@ export class Parser {
         return child;
     }
 }
-
-registerType(Parser);

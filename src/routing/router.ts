@@ -18,5 +18,3 @@ export class Router {
         this.eventHub.raise(new RouteMatched(matchedRoute));
     }
 }
-
-registerSingleton(Router);

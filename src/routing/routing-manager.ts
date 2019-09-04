@@ -44,5 +44,3 @@ export class RoutingManager {
         routeWindow.setView(view);
     }
 }
-
-registerSingleton(RoutingManager);

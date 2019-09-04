@@ -103,5 +103,3 @@ export class ViewBuilder {
         return textNode;
     }
 }
-
-registerType(ViewBuilder);
