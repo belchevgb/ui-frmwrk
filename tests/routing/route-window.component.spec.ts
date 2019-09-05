@@ -1,10 +1,15 @@
 import { ViewBuilder, ComponentDef, Component } from "../../src";
-import { resolve } from "../../src/di";
+import { resolve, clearCachedObjects } from "../../src/di";
 import { RouteWindowComponent } from "../../src/routing/route-window.component";
 import { RoutingManager, defaultRouteWindowName } from "../../src/routing/routing-manager";
 import { lifecycleHookNames, IComponentInit, IComponentDestroy } from "../../src/view-engine/compiler/presentation/lifecycle-hooks";
+import { App } from "../../src/app";
 
 describe("RouteWindowComponent tests", () => {
+    beforeEach(() => {
+        App.reinit();
+    });
+
     it("should self register with correct name", () => {
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
 
@@ -14,6 +19,8 @@ describe("RouteWindowComponent tests", () => {
         `;
         @ComponentDef({selector: "appcomp", template })
         class AppComponent extends Component {}
+
+        App.registerComponents([AppComponent]);
 
         const view = viewBuilder.createView(AppComponent);
         view.callLifecycleHook(lifecycleHookNames.onComponentInit);
@@ -38,6 +45,8 @@ describe("RouteWindowComponent tests", () => {
             onComponentInit(): void {
             }
         }
+
+        App.registerComponents([FirstComponent, SecondComponent]);
 
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
         const routeWindow = viewBuilder.createView(RouteWindowComponent).component as RouteWindowComponent;

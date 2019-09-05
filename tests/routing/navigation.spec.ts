@@ -6,10 +6,11 @@ import { Router } from "../../src/routing/router";
 import { lifecycleHookNames } from "../../src/view-engine/compiler/presentation/lifecycle-hooks";
 import { dependencyStore } from "../../src/di/dependency-store";
 import { NavigationLinkComponent } from "../../src/routing/navigation-link.component";
+import { App } from "../../src/app";
 
 describe("Navigation tests", () => {
     beforeEach(() => {
-        clearCachedObjects();
+        App.reinit();
     });
 
     it("Should load correct components when route is matched", () => {
@@ -21,6 +22,8 @@ describe("Navigation tests", () => {
 
         @ComponentDef({selector: "third", template: "" })
         class ThirdComponent extends Component {}
+
+        App.registerComponents([FirstComponent, SecondComponent, ThirdComponent]);
 
         const routingManager: RoutingManager = resolve(RoutingManager);
 
@@ -56,6 +59,8 @@ describe("Navigation tests", () => {
         @ComponentDef({selector: "app", template: `<route-window name="second-window"></route-window><route-window></route-window>` })
         class AppComponent extends Component {}
 
+        App.registerComponents([FirstComponent, SecondComponent, AppComponent]);
+
         const routingManager: RoutingManager = resolve(RoutingManager);
 
         routingManager.registerRoutes([
@@ -78,14 +83,13 @@ describe("Navigation tests", () => {
     });
 
     it("NavigationLinkComponent should perform correct navigation", () => {
-        // TODO: remove hack
-        registerType(NavigationLinkComponent);
-
         @ComponentDef({selector: "first", template: "" })
         class FirstComponent extends Component {}
 
         @ComponentDef({selector: "app", template: `<navigation-link path="home"></navigation-link><route-window></route-window>` })
         class AppComponent extends Component {}
+
+        App.registerComponents([FirstComponent, AppComponent]);
 
         const routingManager: RoutingManager = resolve(RoutingManager);
 

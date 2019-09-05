@@ -1,10 +1,15 @@
-import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration, InterpolationNode, AttributeNode, EventBindingNode } from "../../../src";
+import { Parser, Node, ElementNode, TextNode, ComponentViewNode, TextNodeType, ComponentDef, IComponentRegistration, InterpolationNode, AttributeNode, EventBindingNode, Component } from "../../../src";
 import { resolve } from "../../../src/di";
+import { App } from "../../../src/app";
 
 describe("Parser tests", () => {
+    beforeEach(() => {
+        App.reinit();
+    });
+    
     it("should return correct ast", () => {
         @ComponentDef({ selector: "component-selector", template: ""})
-        class CustomComponent { }
+        class CustomComponent extends Component { }
 
         const html = `
             <div>
@@ -16,6 +21,8 @@ describe("Parser tests", () => {
                 </h1>
             </div>
         `;
+
+        App.registerComponents([CustomComponent]);
 
         const parser: Parser = resolve(Parser);
         const ast: Node = parser.parse(html);

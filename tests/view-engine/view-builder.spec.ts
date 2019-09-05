@@ -5,14 +5,21 @@ import { EventBindingStrategy } from "../../src/view-engine/compiler/bindings/st
 import { ComponentEventBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/component-event-binding-strategy";
 import { ComponentEvent } from "../../src/view-engine/compiler/presentation/component-event";
 import { ComponentPropertyBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/component-property-binding-strategy";
+import { App } from "../../src/app";
 
 describe("ViewBuilder tests", () => {
+    beforeEach(() => {
+        App.reinit();
+    });
+
     it("should return correct presentation", () => {
         @ComponentDef({ selector: "component-selector", template: "<div></div>"})
         class CustomComponent extends Component { }
 
         @ComponentDef({ selector: "other-selector", template: "<div><component-selector></component-selector></div>" })
         class OtherComponent extends Component { }
+
+        App.registerComponents([CustomComponent, OtherComponent]);
 
         const builder: ViewBuilder = resolve(ViewBuilder);
         const presentation = builder.createView(OtherComponent).presentation;
@@ -32,6 +39,8 @@ describe("ViewBuilder tests", () => {
         @ComponentDef({ selector: "component-selector", template: "<div>text {{prop}} text</div>"})
         class CustomComponent extends Component { }
 
+        App.registerComponents([CustomComponent]);
+
         const builder: ViewBuilder = resolve(ViewBuilder);
         const view = builder.createView(CustomComponent);
         const bindings = view.bindings.get("prop");
@@ -43,6 +52,8 @@ describe("ViewBuilder tests", () => {
     it("should process attribute interpolation correctly", () => {
         @ComponentDef({ selector: "component-selector", template: `<div someAttr="key1 {{prop}} key2"></div>`})
         class CustomComponent extends Component { }
+
+        App.registerComponents([CustomComponent]);
 
         const builder: ViewBuilder = resolve(ViewBuilder);
         const view = builder.createView(CustomComponent);
@@ -61,6 +72,8 @@ describe("ViewBuilder tests", () => {
         @ComponentDef({ selector: "component-selector", template: `<div (click)="handler"></div>`})
         class CustomComponent extends Component { }
 
+        App.registerComponents([CustomComponent]);
+
         const builder: ViewBuilder = resolve(ViewBuilder);
         const view = builder.createView(CustomComponent);
         const bindings = view.bindings.get("click");
@@ -77,6 +90,8 @@ describe("ViewBuilder tests", () => {
 
         @ComponentDef({ selector: "other-selector", template: `<component-selector (click)="onClick" childProp="parentProp"></component-selector>` })
         class OtherComponent extends Component { }
+
+        App.registerComponents([CustomComponent, OtherComponent]);
 
         const builder: ViewBuilder = resolve(ViewBuilder);
         const view = builder.createView(OtherComponent);
