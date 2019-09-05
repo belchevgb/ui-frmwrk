@@ -6,7 +6,7 @@ describe("Parser tests", () => {
     beforeEach(() => {
         App.reinit();
     });
-    
+
     it("should return correct ast", () => {
         @ComponentDef({ selector: "component-selector", template: ""})
         class CustomComponent extends Component { }

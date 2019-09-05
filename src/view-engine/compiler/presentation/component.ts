@@ -61,7 +61,6 @@ export function ComponentDef(config: IComponentConfig) {
  * Base class for all the components in the application.
  */
 export abstract class Component {
-    // TODO: revise
     view: ComponentView;
     data = createDataStore();
 }

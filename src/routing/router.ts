@@ -11,7 +11,7 @@ export class Router {
         const matchedRoute = this.routeMatcher.matchRoute(path);
 
         if (!matchedRoute) {
-            // TODO: handle not matched route
+            throw new Error(`There is no Component for ${path}.`);
         }
 
         history.pushState({}, path, path);

@@ -5,9 +5,8 @@ import { ComponentEvent } from "../../presentation/component-event";
 /**
  * Handles the raise of child component's event, for which a parent component is listening.
  */
-export class ComponentEventBindingStrategy extends BindingStrategyBase<HTMLElement> {
-    constructor(element: HTMLElement, component: Component, private eventName: string, private eventHandlerName: string, private childComponent: Component) {
-        super(element, component);
+export class ComponentEventBindingStrategy {
+    constructor(private component: Component, private eventName: string, private eventHandlerName: string, private childComponent: Component) {
         this.subscribeForEvent();
     }
 

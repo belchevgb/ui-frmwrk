@@ -4,12 +4,15 @@ import { Type } from "../../exports";
 
 type EventHandler<TEvent> = (ev: TEvent) => void;
 
+interface ISubscription {
+    unsubscribe(): void;
+}
+
 @Injectable
 export class EventHub {
     private eventSubscribers = new Map<Type<ApplicationEvent<any>>, EventHandler<any>[]>();
 
-    // TODO: return some kind of subscription
-    subscribe<TData, TEvent extends ApplicationEvent<TData>>(eventType: new (data: TData) => TEvent, cb: (ev: TEvent) => void): void {
+    subscribe<TData, TEvent extends ApplicationEvent<TData>>(eventType: new (data: TData) => TEvent, cb: (ev: TEvent) => void): ISubscription {
         let subscribers = this.eventSubscribers.get(eventType);
         if (!subscribers) {
             subscribers = [];
@@ -17,6 +20,12 @@ export class EventHub {
         }
 
         subscribers.push(cb);
+
+        return {
+            unsubscribe() {
+                subscribers.splice(subscribers.indexOf(cb), 1);
+            }
+        };
     }
 
     raise<TData, TEvent extends ApplicationEvent<TData>>(ev: TEvent) {

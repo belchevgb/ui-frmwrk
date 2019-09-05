@@ -2,6 +2,10 @@ import { Component, DataStore } from "./component";
 import { BindingStrategyBase } from "../bindings/strategies/binding-strategy.base";
 import { isFunction } from "../../../common/helpers";
 import { ComponentPropertyBindingStrategy } from "../bindings/strategies/component-property-binding-strategy";
+import { EventBindingStrategy } from "../bindings/strategies/event-strategy";
+import { ComponentEventBindingStrategy } from "../bindings/strategies/component-event-binding-strategy";
+
+type BindingStrategy = BindingStrategyBase<any> | ComponentEventBindingStrategy | EventBindingStrategy;
 
 /**
  * Represents component view.
@@ -11,7 +15,7 @@ import { ComponentPropertyBindingStrategy } from "../bindings/strategies/compone
 export class ComponentView {
     children: ComponentView[] = [];
     presentation: HTMLElement;
-    bindings = new Map<any, BindingStrategyBase<any>[]>();
+    bindings = new Map<any, BindingStrategy[]>();
 
     constructor(public parent: ComponentView, public component: Component) {
         const store = component.data as DataStore;
@@ -49,7 +53,12 @@ export class ComponentView {
 
         const strategies = this.bindings.get(changedPropKey) || [];
 
-        strategies.forEach(s => s.update(newValue));
+        strategies.forEach(s => {
+            if (s instanceof BindingStrategyBase) {
+                s.update(newValue);
+            }
+        });
+
         this.children.forEach(c => c.update(changedPropKey, prevValue, newValue));
     }
 }

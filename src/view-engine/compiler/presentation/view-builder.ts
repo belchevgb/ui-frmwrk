@@ -5,9 +5,6 @@ import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
 import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
-import { lifecycleHookNames } from "./lifecycle-hooks";
-
-// TODO: optimise event and prop bindings (filter func)
 
 /**
  * Creates view objects.
@@ -89,11 +86,17 @@ export class ViewBuilder {
     }
 
     private createChildElement(ast: ElementNode, view: ComponentView, parentElement: HTMLElement) {
-        const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
-        const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
-        const node = this.renderer.createElement(ast.name, attributes);
+        const node = this.renderer.createElement(ast.name);
 
-        eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
+        for (const ch of ast.children) {
+            if (ch instanceof AttributeNode) {
+                node.setAttribute(ch.key, ch.value);
+            }
+
+            if (ch instanceof EventBindingNode) {
+                this.bindingsProcessor.trySetEventBinding(ch, node, view);
+            }
+        }
 
         return node;
     }
