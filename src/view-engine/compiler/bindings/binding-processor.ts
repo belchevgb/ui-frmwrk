@@ -11,8 +11,6 @@ import { ComponentPropertyBindingStrategy } from "./strategies/component-propert
 const INTERPOLATION_PATTERN = /{{[a-z0-9]+}}/i;
 const INTERPOLATION_BRACKETS = ["{{", "}}"];
 
-// TODO: handle event names collision in strategies dictionary
-
 /**
  * Processes the bound properties of a component to the view.
  */
@@ -25,7 +23,7 @@ export class BindingProcessor {
         this.trySetAttributeBindings(node, nodeElement, view);
     }
 
-    trySetEventBindings(node: Node, nodeElement: HTMLElement, view: ComponentView) {
+    trySetEventBinding(node: Node, nodeElement: HTMLElement, view: ComponentView) {
         if (node instanceof EventBindingNode) {
             const strategies = this.getBindingStrategiesCollection(node.eventName, view);
             const strategy = new EventBindingStrategy(nodeElement, view.component, node.eventName, node.eventHandlerName);
@@ -35,7 +33,7 @@ export class BindingProcessor {
     }
 
     trySetComponentEventBinding(view: ComponentView, childView: ComponentView, eventBinding: EventBindingNode) {
-        const strategy = new ComponentEventBindingStrategy(null, view.component, eventBinding.eventName, eventBinding.eventHandlerName, childView.component);
+        const strategy = new ComponentEventBindingStrategy(view.component, eventBinding.eventName, eventBinding.eventHandlerName, childView.component);
         const key = `${eventBinding.eventName}_${eventBinding.eventHandlerName}`;
         const strategies = this.getBindingStrategiesCollection(key, view);
 
@@ -46,6 +44,7 @@ export class BindingProcessor {
         const strategy = new ComponentPropertyBindingStrategy(null, view.component, childView.component, propBinding.key, propBinding.value);
         const strategies = this.getBindingStrategiesCollection(propBinding.value, view);
 
+        strategy.update(propBinding.value);
         strategies.push(strategy);
     }
 
@@ -90,5 +89,3 @@ export class BindingProcessor {
         return view.bindings.get(boundProperty);
     }
 }
-
-registerType(BindingProcessor);

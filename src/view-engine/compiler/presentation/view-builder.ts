@@ -1,12 +1,10 @@
 import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode, AttributeNode, EventBindingNode } from "../parser/parser";
-import { IComponentConfig, COMPONENT_CONFIG_MD_KEY } from "./component";
+import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, Component } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
 import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
-
-// TODO: optimise event and prop bindings (filter func)
 
 /**
  * Creates view objects.
@@ -21,7 +19,7 @@ export class ViewBuilder {
      * @param parent The parent view.
      */
     createView(componentType: any, parent: ComponentView = null) {
-        const component = resolve(componentType);
+        const component: Component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
         const ast = this.parser.parse(config.template);
         const view = new ComponentView(parent, component);
@@ -36,6 +34,7 @@ export class ViewBuilder {
 
         ast.children.forEach(c => this.createChild(c, view, viewPresentation));
         view.presentation = viewPresentation;
+        view.component.view = view;
     }
 
     private createChild(ast: Node, view: ComponentView, parentElement: HTMLElement) {
@@ -87,11 +86,17 @@ export class ViewBuilder {
     }
 
     private createChildElement(ast: ElementNode, view: ComponentView, parentElement: HTMLElement) {
-        const attributes = ast.children.filter(c => c instanceof AttributeNode) as AttributeNode[];
-        const eventBindings = ast.children.filter(c => c instanceof EventBindingNode) as EventBindingNode[];
-        const node = this.renderer.createElement(ast.name, attributes);
+        const node = this.renderer.createElement(ast.name);
 
-        eventBindings.forEach(b => this.bindingsProcessor.trySetEventBindings(b, node, view));
+        for (const ch of ast.children) {
+            if (ch instanceof AttributeNode) {
+                node.setAttribute(ch.key, ch.value);
+            }
+
+            if (ch instanceof EventBindingNode) {
+                this.bindingsProcessor.trySetEventBinding(ch, node, view);
+            }
+        }
 
         return node;
     }
@@ -101,5 +106,3 @@ export class ViewBuilder {
         return textNode;
     }
 }
-
-registerType(ViewBuilder);

@@ -1,7 +1,12 @@
 import { Lexer } from "../../../src/view-engine/compiler/lexer/lexer";
 import { IStringToken, TokenType, ITagToken, StringPartType, IAttributeToken } from "../../../src/view-engine/compiler/lexer/token";
+import { App } from "../../../src/app";
 
 describe("Lexer tests", () => {
+    beforeEach(() => {
+        App.reinit();
+    });
+
     describe("Should process comments correctly", () => {
         it("process single-line comment", () => {
             const text = " Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ";
@@ -16,7 +21,9 @@ describe("Lexer tests", () => {
         });
 
         it("process muli-line comment", () => {
-            const text = "\nx\n";
+            const text = `
+            x
+            `;
             const comment = `<!--${text}-->`;
             const lexer = new Lexer();
             lexer.init(comment);

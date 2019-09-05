@@ -34,5 +34,3 @@ export class Renderer {
         return document.createComment(data);
     }
 }
-
-registerType(Renderer);

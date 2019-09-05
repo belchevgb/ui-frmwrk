@@ -19,7 +19,8 @@ const identifiers = {
     tagCloseBracket: ">",
     selfClosingTagEnd: "/>",
     attributeKeyValueDelimiter: "=",
-    quote: '"',
+    doubleQuote: '"',
+    singleQuote: "'",
     closeTagStart: "</",
     interpolationStart: "{{",
     interpolationEnd: "}}",
@@ -39,8 +40,6 @@ function isWhiteSpace(char: string) {
 function isNewLine(char: string) {
     return matchers.newLine.test(char);
 }
-
-// TODO: handle ' in template
 
 /**
  * Tokenizes given template.
@@ -217,11 +216,11 @@ export class Lexer {
 
         this.setContext(Context.BeforeAttributeValue);
         this.skipChars(identifiers.attributeKeyValueDelimiter.length);
-        this.skipChars(identifiers.quote.length);
+        this.skipChars(identifiers.doubleQuote.length);
 
-        attribute.value = this.consumeUntil(c => c !== identifiers.quote);
+        attribute.value = this.consumeUntil(c => c !== identifiers.doubleQuote && c !== identifiers.singleQuote);
 
-        this.skipChars(identifiers.quote.length);
+        this.skipChars(identifiers.doubleQuote.length);
         this.setContext(Context.BeforeAttributeKey);
         this.skipWhiteSpace();
 
@@ -370,7 +369,6 @@ export class Lexer {
     private consumeChar() {
         const char = this.template[this.currentIndex++];
 
-        // TODO: handle \n\r
         if (!this.isEnd()) {
             if (isNewLine(char)) {
                 this.position.col = 0;
@@ -383,5 +381,3 @@ export class Lexer {
         return char;
     }
 }
-
-registerType(Lexer);

@@ -1,14 +1,13 @@
 import { Component, ComponentDef, ViewBuilder } from "../../src";
 import { resolve } from "../../src/di";
 import { ComponentEvent } from "../../src/view-engine/compiler/presentation/component-event";
+import { App } from "../../src/app";
 
 const CLOCK_TICK_TIMEOUT = 1000;
 
 describe("Change detection and bindings tests", () => {
-    beforeAll(() => {
-    });
-
     beforeEach(() => {
+        App.reinit();
         jasmine.clock().install();
     });
 
@@ -34,6 +33,8 @@ describe("Change detection and bindings tests", () => {
                 this.data.counter++;
             }
         }
+
+        App.registerComponents([SimpleComponent]);
 
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
         const view = viewBuilder.createView(SimpleComponent);
@@ -66,6 +67,8 @@ describe("Change detection and bindings tests", () => {
             }
         }
 
+        App.registerComponents([SimpleComponent]);
+
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
         const view = viewBuilder.createView(SimpleComponent);
         const button = view.presentation.getElementsByTagName("button")[0];
@@ -97,6 +100,8 @@ describe("Change detection and bindings tests", () => {
             }
         }
 
+        App.registerComponents([CustomComponent, OtherComponent]);
+
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
         const view = viewBuilder.createView(OtherComponent);
 
@@ -121,6 +126,8 @@ describe("Change detection and bindings tests", () => {
                 this.data.parentProp = propChangedText;
             }
         }
+
+        App.registerComponents([CustomComponent, OtherComponent]);
 
         const viewBuilder: ViewBuilder = resolve(ViewBuilder);
         const view = viewBuilder.createView(OtherComponent);

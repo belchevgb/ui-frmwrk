@@ -1,6 +1,7 @@
 import "reflect-metadata";
-import { registerType, Injectable, resolve, registerSingleton } from "../../../di";
+import { registerType } from "../../../di";
 import { defineMetadata } from "../../../common/metadata";
+import { ComponentView } from "./view";
 
 type PropChangeFunc = (changedPropKey: any, prevValue: any, newValue: any) => void;
 
@@ -52,10 +53,7 @@ export function ComponentDef(config: IComponentConfig) {
     return (componentType: any) => {
         defineMetadata(COMPONENT_CONFIG_MD_KEY, config, componentType);
 
-        const componentStore: ComponentStore = resolve(ComponentStore);
-
-        componentStore.registerComponent(config.selector, { componentType, template: config.template });
-        registerType(componentType);
+        ComponentStore.registerComponent(config.selector, { componentType, template: config.template });
     };
 }
 
@@ -63,6 +61,7 @@ export function ComponentDef(config: IComponentConfig) {
  * Base class for all the components in the application.
  */
 export abstract class Component {
+    view: ComponentView;
     data = createDataStore();
 }
 
@@ -71,32 +70,28 @@ export interface IComponentRegistration {
     componentType: any;
 }
 
-
 export type Type<T> = new (...args: any[]) => T;
 
 /**
  * Persists component registrations by their selector.
  */
-@Injectable
 export class ComponentStore {
-    private components = new Map<string, IComponentRegistration>();
+    private static components = new Map<string, IComponentRegistration>();
 
     /**
      * Registers new component data.
      * @param selector Component's selector.
      * @param registration Component registration that contains component data.
      */
-    registerComponent(selector: string, registration: IComponentRegistration) {
-        this.components.set(selector, registration);
+    static registerComponent(selector: string, registration: IComponentRegistration) {
+        ComponentStore.components.set(selector, registration);
     }
 
     /**
      * Retrieves component registration.
      * @param selector Component's selector.
      */
-    getRegistration(selector: string) {
-        return this.components.get(selector);
+    static getRegistration(selector: string) {
+        return ComponentStore.components.get(selector);
     }
 }
-
-registerSingleton(ComponentStore);
