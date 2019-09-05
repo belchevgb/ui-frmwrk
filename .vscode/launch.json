@@ -30,6 +30,16 @@
             "protocol": "inspector",
             "port": 9229,
             "sourceMaps": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Webpack",
+            "program": "${workspaceFolder}/node_modules/webpack/bin/webpack.js",
+            "args": [
+                "--config",
+                "./config/webpack/webpack-dev.config.js"
+            ]
         }
     ]
 }
