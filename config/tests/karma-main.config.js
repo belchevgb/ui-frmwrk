@@ -24,8 +24,5 @@ module.exports = {
     mime: {
         'text/x-typescript': ['ts']
     },
-    webpack: {
-        module: webpackConfig.module,
-        resolve: webpackConfig.resolve
-    }
+    webpack: webpackConfig
 };

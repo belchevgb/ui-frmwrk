@@ -40,7 +40,8 @@ function createDataStore(): IPropertyBag {
 
 export interface IComponentConfig {
     selector: string;
-    template: string;
+    template?: string;
+    templateUrl?: string;
 }
 
 export const COMPONENT_CONFIG_MD_KEY = "cmp-cfg";
