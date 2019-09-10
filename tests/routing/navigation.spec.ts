@@ -1,6 +1,6 @@
 import { RoutingManager } from "../../src/routing/routing-manager";
 import { resolve, registerType, registerSingleton, clearCachedObjects } from "../../src/di";
-import { ComponentDef, Component, ViewBuilder } from "../../src";
+import { ComponentDef, Component, JitViewResolver } from "../../src";
 import { RouteWindowComponent } from "../../src/routing/route-window.component";
 import { Router } from "../../src/routing/router";
 import { lifecycleHookNames } from "../../src/view-engine/compiler/presentation/lifecycle-hooks";
@@ -33,8 +33,8 @@ describe("Navigation tests", () => {
             { path: ":third/third", component: ThirdComponent }
         ]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const routeWindow = viewBuilder.createView(RouteWindowComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const routeWindow = viewBuilder.getView(RouteWindowComponent);
         routeWindow.callLifecycleHook(lifecycleHookNames.onComponentInit);
 
         const router: Router = resolve(Router);
@@ -68,8 +68,8 @@ describe("Navigation tests", () => {
             { path: "page/second", component: SecondComponent, routeWindowName: "second-window" }
         ]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const appView = viewBuilder.createView(AppComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const appView = viewBuilder.getView(AppComponent);
         appView.callLifecycleHook(lifecycleHookNames.onComponentInit);
 
         const namedRouteView = appView.children.find(x => x.component instanceof RouteWindowComponent && x.component.data.name === "second-window");
@@ -97,8 +97,8 @@ describe("Navigation tests", () => {
             { path: "home", component: FirstComponent }
         ]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const appView = viewBuilder.createView(AppComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const appView = viewBuilder.getView(AppComponent);
         appView.callLifecycleHook(lifecycleHookNames.onComponentInit);
 
         const navLink = appView.presentation.getElementsByTagName("navigation-link")[0] as HTMLElement;

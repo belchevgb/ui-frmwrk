@@ -1,4 +1,4 @@
-import { ViewBuilder, ComponentDef, Component } from "../../src";
+import { JitViewResolver, ComponentDef, Component } from "../../src";
 import { resolve, clearCachedObjects } from "../../src/di";
 import { RouteWindowComponent } from "../../src/routing/route-window.component";
 import { RoutingManager, defaultRouteWindowName } from "../../src/routing/routing-manager";
@@ -11,7 +11,7 @@ describe("RouteWindowComponent tests", () => {
     });
 
     it("should self register with correct name", () => {
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
 
         const template = `
             <route-window></route-window>
@@ -22,7 +22,7 @@ describe("RouteWindowComponent tests", () => {
 
         App.registerComponents([AppComponent]);
 
-        const view = viewBuilder.createView(AppComponent);
+        const view = viewBuilder.getView(AppComponent);
         view.callLifecycleHook(lifecycleHookNames.onComponentInit);
 
         const manager: RoutingManager = resolve(RoutingManager);
@@ -48,10 +48,10 @@ describe("RouteWindowComponent tests", () => {
 
         App.registerComponents([FirstComponent, SecondComponent]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const routeWindow = viewBuilder.createView(RouteWindowComponent).component as RouteWindowComponent;
-        const firstCompView = viewBuilder.createView(FirstComponent);
-        const secondCompView = viewBuilder.createView(SecondComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const routeWindow = viewBuilder.getView(RouteWindowComponent).component as RouteWindowComponent;
+        const firstCompView = viewBuilder.getView(FirstComponent);
+        const secondCompView = viewBuilder.getView(SecondComponent);
 
         const firstComp = firstCompView.component as FirstComponent;
         const secondComp = secondCompView.component as SecondComponent;

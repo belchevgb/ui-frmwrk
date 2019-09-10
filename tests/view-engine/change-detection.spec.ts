@@ -1,4 +1,4 @@
-import { Component, ComponentDef, ViewBuilder } from "../../src";
+import { Component, ComponentDef, JitViewResolver } from "../../src";
 import { resolve } from "../../src/di";
 import { ComponentEvent } from "../../src/view-engine/compiler/presentation/component-event";
 import { App } from "../../src/app";
@@ -36,8 +36,8 @@ describe("Change detection and bindings tests", () => {
 
         App.registerComponents([SimpleComponent]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const view = viewBuilder.createView(SimpleComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const view = viewBuilder.getView(SimpleComponent);
         const button = view.presentation.getElementsByTagName("button")[0];
         const div = view.presentation.getElementsByTagName("div")[0];
 
@@ -69,8 +69,8 @@ describe("Change detection and bindings tests", () => {
 
         App.registerComponents([SimpleComponent]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const view = viewBuilder.createView(SimpleComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const view = viewBuilder.getView(SimpleComponent);
         const button = view.presentation.getElementsByTagName("button")[0];
         const div = view.presentation.getElementsByTagName("div")[0];
 
@@ -102,8 +102,8 @@ describe("Change detection and bindings tests", () => {
 
         App.registerComponents([CustomComponent, OtherComponent]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const view = viewBuilder.createView(OtherComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const view = viewBuilder.getView(OtherComponent);
 
         const button = view.presentation.getElementsByTagName("button")[0];
         const span = view.presentation.getElementsByTagName("span")[0];
@@ -129,8 +129,8 @@ describe("Change detection and bindings tests", () => {
 
         App.registerComponents([CustomComponent, OtherComponent]);
 
-        const viewBuilder: ViewBuilder = resolve(ViewBuilder);
-        const view = viewBuilder.createView(OtherComponent);
+        const viewBuilder: JitViewResolver = resolve(JitViewResolver);
+        const view = viewBuilder.getView(OtherComponent);
         const span = view.presentation.getElementsByTagName("span")[0];
         const button = view.presentation.getElementsByTagName("button")[0];
 

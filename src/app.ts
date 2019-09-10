@@ -1,6 +1,6 @@
 import { resolve, registerType, clearCachedObjects } from "./di";
 
-import { ViewBuilder } from "./exports";
+import { JitViewResolver } from "./exports";
 
 import { Type, Component } from "./view-engine/compiler/presentation/component";
 import { IRoute } from "./routing/interfaces";
@@ -30,8 +30,8 @@ export class App {
 
     static start(rootComponentType: Type<any>, rootElementSelector: string) {
         const element = document.getElementById(rootElementSelector);
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const mainView = builder.createView(rootComponentType);
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const mainView = builder.getView(rootComponentType);
 
         element.appendChild(mainView.presentation);
     }

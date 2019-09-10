@@ -1,4 +1,4 @@
-import { ComponentDef, ViewBuilder, Component } from "../../src";
+import { ComponentDef, JitViewResolver, Component } from "../../src";
 import { resolve } from "../../src/di";
 import { TextBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/text-strategy";
 import { EventBindingStrategy } from "../../src/view-engine/compiler/bindings/strategies/event-strategy";
@@ -21,8 +21,8 @@ describe("ViewBuilder tests", () => {
 
         App.registerComponents([CustomComponent, OtherComponent]);
 
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const presentation = builder.createView(OtherComponent).presentation;
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const presentation = builder.getView(OtherComponent).presentation;
 
         const rootElement = presentation;
         const divElement = rootElement.firstElementChild;
@@ -41,8 +41,8 @@ describe("ViewBuilder tests", () => {
 
         App.registerComponents([CustomComponent]);
 
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const view = builder.createView(CustomComponent);
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const view = builder.getView(CustomComponent);
         const bindings = view.bindings.get("prop");
 
         expect(bindings.length).toEqual(1);
@@ -55,8 +55,8 @@ describe("ViewBuilder tests", () => {
 
         App.registerComponents([CustomComponent]);
 
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const view = builder.createView(CustomComponent);
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const view = builder.getView(CustomComponent);
         const bindings = view.bindings.get("prop");
 
         expect(bindings.length).toEqual(1);
@@ -74,8 +74,8 @@ describe("ViewBuilder tests", () => {
 
         App.registerComponents([CustomComponent]);
 
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const view = builder.createView(CustomComponent);
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const view = builder.getView(CustomComponent);
         const bindings = view.bindings.get("click");
 
         expect(bindings.length).toEqual(1);
@@ -93,8 +93,8 @@ describe("ViewBuilder tests", () => {
 
         App.registerComponents([CustomComponent, OtherComponent]);
 
-        const builder: ViewBuilder = resolve(ViewBuilder);
-        const view = builder.createView(OtherComponent);
+        const builder: JitViewResolver = resolve(JitViewResolver);
+        const view = builder.getView(OtherComponent);
         const eventBindings = view.bindings.get("click_onClick");
         const propBindings = view.bindings.get("parentProp");
 

@@ -1,28 +1,31 @@
 import { Node, Parser, ElementNode, ComponentViewNode, TextNode, TextNodeType, InterpolationNode, AttributeNode, EventBindingNode } from "../parser/parser";
-import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, Component } from "./component";
+import { IComponentConfig, COMPONENT_CONFIG_MD_KEY, Component, Type } from "./component";
 import "reflect-metadata";
 import { ComponentView } from "./view";
 import { Renderer } from "./renderer";
 import { Injectable, resolve, registerType } from "../../../di";
 import { BindingProcessor } from "../bindings/binding-processor";
+import { ViewResolver } from "./view-resolver";
 
 /**
  * Creates view objects.
  */
 @Injectable
-export class ViewBuilder {
-    constructor(private parser: Parser, private renderer: Renderer, private bindingsProcessor: BindingProcessor) { }
+export class JitViewResolver extends ViewResolver {
+    constructor(private parser: Parser, private renderer: Renderer, private bindingsProcessor: BindingProcessor) {
+        super();
+    }
 
     /**
      * Creates component view.
      * @param componentType The component type, for which a view will be created.
      * @param parent The parent view.
      */
-    createView(componentType: any, parent: ComponentView = null) {
+    getView(componentType: Type<Component>) {
         const component: Component = resolve(componentType);
         const config: IComponentConfig = Reflect.getMetadata(COMPONENT_CONFIG_MD_KEY, componentType);
         const ast = this.parser.parse(config.template);
-        const view = new ComponentView(parent, component);
+        const view = new ComponentView(component);
 
         this.buildChildTree(ast, config, view);
 
@@ -71,7 +74,7 @@ export class ViewBuilder {
     }
 
     private createChildView(ast: ComponentViewNode, view: ComponentView, parentElement: HTMLElement) {
-        const childView = this.createView(ast.compReg.componentType, view);
+        const childView = this.getView(ast.compReg.componentType);
 
         ast.children.forEach(c => {
             if (c instanceof AttributeNode) {

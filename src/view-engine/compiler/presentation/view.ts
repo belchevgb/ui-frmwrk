@@ -17,7 +17,7 @@ export class ComponentView {
     presentation: HTMLElement;
     bindings = new Map<any, BindingStrategy[]>();
 
-    constructor(public parent: ComponentView, public component: Component) {
+    constructor(public component: Component) {
         const store = component.data as DataStore;
         store.registerOnChange((a, b, c) => this.update(a, b, c));
     }
